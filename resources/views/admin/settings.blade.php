@@ -21,7 +21,7 @@
 @endforelse
 </div>
 <label>Add new cover photos or videos (up to 10)<input type="file" name="hero_uploads[]" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/ogg" multiple></label>
-<p class="hint">Photos up to 5 MB; videos up to 50 MB. New uploads are added after selected slides and play automatically.</p>
+<p class="hint">Maximum 50 MB per photo or video. New uploads are added after selected slides and play automatically.</p>
 </fieldset>
 @endif
 <div class="sticky-actions"><button class="primary" data-save>Save changes</button><small>Changes become public immediately after saving.</small></div></form></section><aside class="panel preview-panel"><h2>Website preview</h2><div class="desktop-preview-stage"><iframe title="Website preview in desktop layout" id="site-preview" src="/?editor-preview=1" sandbox="allow-same-origin allow-scripts"></iframe></div><button type="button" id="refresh-preview">Refresh saved preview ↻</button></aside></div>

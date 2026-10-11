@@ -17,6 +17,14 @@ class Site
             }
         }
         $data = array_replace($defaults, SiteSetting::pluck('value', 'key')->all());
+        if (($data['primary_url'] ?? null) === '/activities') {
+            $data['primary_url'] = '/achievements';
+            $data['primary_text'] = 'Explore achievements';
+        }
+        if (($data['stat_2_label'] ?? null) === 'Activities') {
+            $data['stat_2_label'] = 'Programs';
+        }
+        unset($data['nav_activities'], $data['activities_link']);
         $images = Media::whereIn('id', array_filter([$data['logo_id'], $data['favicon_id'], $data['hero_image_id'] ?? null]))->get()->keyBy('id');
         $data['logo_url'] = isset($images[$data['logo_id']]) ? $images[$data['logo_id']]->url : asset('images/uecfi-logo.png');
         $data['favicon_url'] = isset($images[$data['favicon_id']]) ? $images[$data['favicon_id']]->url : $data['logo_url'];

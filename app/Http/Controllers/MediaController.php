@@ -11,14 +11,18 @@ class MediaController extends Controller
 {
     public function show(Media $media)
     {
-        abort_unless(Storage::disk('public')->exists($media->path), 404);
+        $disk = Storage::disk($media->storage_disk);
+        abort_unless($disk->exists($media->path), 404);
 
-        return response()->file(Storage::disk('public')->path($media->path), ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'public, max-age=86400']);
+        if ($media->storage_disk === 'public') {
+            return response()->file($disk->path($media->path), ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'public, max-age=86400']);
+        }
+
+        return $disk->response($media->path, $media->name, ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'public, max-age=86400']);
     }
 
     public function destroy(Media $media)
     {
-        $path = $media->path;
         $isVideo = $media->is_video;
 
         DB::transaction(function () use ($media) {
@@ -31,7 +35,7 @@ class MediaController extends Controller
             $media->delete();
         });
 
-        Storage::disk('public')->delete($path);
+        app(\App\Services\MediaStorage::class)->delete($media);
 
         return back()->with('success', $isVideo ? 'Video deleted.' : 'Photo deleted.');
     }

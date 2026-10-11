@@ -10,6 +10,13 @@ class Media extends Model
 
     protected $guarded = ['id'];
 
+    protected $attributes = ['disk' => 'public'];
+
+    public function getStorageDiskAttribute(): string
+    {
+        return $this->disk ?: 'public';
+    }
+
     public function getUrlAttribute()
     {
         return route('media.show', $this);

@@ -40,12 +40,18 @@ class CmsTest extends TestCase
 
     public function test_public_pages_details_and_missing_pages(): void
     {
-        foreach (['/', '/news', '/achievements', '/activities', '/officers', '/admin/login'] as $url) {
+        foreach (['/', '/news', '/achievements', '/officers', '/admin/login'] as $url) {
             $this->get($url)->assertOk();
         }
         foreach (Content::all() as $record) {
+            if ($record->type === 'activities') {
+                $this->get('/activities/'.$record->slug)->assertNotFound();
+                continue;
+            }
             $this->get('/'.$record->type.'/'.$record->slug)->assertOk()->assertSee($record->title);
         }
+        $this->get('/activities')->assertNotFound();
+        $this->get('/')->assertDontSee('/activities')->assertDontSee('Activities');
         $this->get('/news/missing')->assertNotFound();
         $this->get('/missing')->assertNotFound();
     }
@@ -74,7 +80,7 @@ class CmsTest extends TestCase
     public function test_content_crud_publication_preview_and_type_boundaries(): void
     {
         $this->actingAs($this->admin());
-        foreach (['news', 'achievements', 'activities'] as $type) {
+        foreach (['news', 'achievements'] as $type) {
             $slug = 'created-'.$type;
             $this->post('/admin/content/'.$type, $this->payload(['slug' => $slug]))->assertSessionHasNoErrors()->assertRedirect();
             $record = Content::where('slug', $slug)->firstOrFail();
@@ -84,11 +90,14 @@ class CmsTest extends TestCase
             $this->get('/'.$type.'/'.$slug)->assertOk()->assertSee('Public content from the CMS.');
             $this->put('/admin/content/'.$type.'/'.$record->id, $this->payload(['slug' => $slug, 'status' => 'published', 'published_at' => now()->addDay()->format('Y-m-d H:i:s')]))->assertSessionHasNoErrors();
             $this->get('/'.$type.'/'.$slug)->assertNotFound();
-            $other = $type === 'news' ? 'activities' : 'news';
+            $other = $type === 'news' ? 'achievements' : 'news';
             $this->get('/admin/content/'.$other.'/'.$record->id.'/edit')->assertNotFound();
             $this->delete('/admin/content/'.$type.'/'.$record->id)->assertRedirect();
             $this->assertDatabaseMissing('contents', ['id' => $record->id]);
         }
+        $this->get('/admin/content/activities')->assertNotFound();
+        $this->post('/admin/content/activities', $this->payload())->assertNotFound();
+        $this->get('/admin')->assertDontSee('Activities');
     }
 
     public function test_admin_forms_render_and_validation_rejects_bad_data(): void
@@ -115,25 +124,88 @@ class CmsTest extends TestCase
         $bytes = file_get_contents(public_path('images/uecfi-logo.png'));
         $cover = UploadedFile::fake()->createWithContent('cover.png', $bytes);
         $gallery = UploadedFile::fake()->createWithContent('gallery.png', $bytes);
-        $this->post('/admin/content/activities', $this->payload([
-            'slug' => 'uploaded-activity',
-            'title' => 'Uploaded activity',
+        $this->post('/admin/content/news', $this->payload([
+            'slug' => 'uploaded-news',
+            'title' => 'Uploaded news',
             'cover_upload' => $cover,
             'gallery_uploads' => [$gallery],
         ]))->assertSessionHasNoErrors();
-        $record = Content::where('slug', 'uploaded-activity')->firstOrFail();
+        $record = Content::where('slug', 'uploaded-news')->firstOrFail();
         $this->assertNotNull($record->cover_id);
         $this->assertCount(1, $record->gallery);
         Storage::disk('public')->assertExists($record->cover->path);
         Storage::disk('public')->assertExists($record->gallery->first()->path);
         $this->get('/media/'.$record->cover_id)->assertOk();
-        $this->get('/activities/'.$record->slug)->assertNotFound();
+        $this->get('/news/'.$record->slug)->assertNotFound();
 
         $portrait = UploadedFile::fake()->createWithContent('portrait.png', $bytes);
         $this->post('/admin/officers', ['name' => 'Uploaded officer', 'position' => 'Coordinator', 'biography' => 'Biography', 'status' => 'published', 'hierarchy_level' => 3, 'sort_order' => 2, 'photo_upload' => $portrait])->assertSessionHasNoErrors();
         $officer = Officer::where('name', 'Uploaded officer')->firstOrFail();
         $this->assertNotNull($officer->photo_id);
         Storage::disk('public')->assertExists($officer->photo->path);
+    }
+
+    public function test_content_media_limits_count_cover_and_gallery_and_enforce_50mb(): void
+    {
+        Storage::fake('public');
+        $this->actingAs($this->admin());
+        $bytes = file_get_contents(public_path('images/uecfi-logo.png'));
+        $tooManyPhotos = [
+            'slug' => 'too-many-photos',
+            'cover_upload' => UploadedFile::fake()->createWithContent('cover.png', $bytes),
+            'gallery_uploads' => [
+                UploadedFile::fake()->createWithContent('one.png', $bytes),
+                UploadedFile::fake()->createWithContent('two.png', $bytes),
+                UploadedFile::fake()->createWithContent('three.png', $bytes),
+            ],
+        ];
+        $this->post('/admin/content/news', $this->payload($tooManyPhotos))->assertSessionHasErrors('gallery_uploads');
+        $this->assertDatabaseMissing('contents', ['slug' => 'too-many-photos']);
+
+        $oversized = UploadedFile::fake()->create('big.mp4', 51201, 'video/mp4');
+        $this->post('/admin/content/news', $this->payload(['slug' => 'oversized-video', 'gallery_uploads' => [$oversized]]))
+            ->assertSessionHasErrors('gallery_uploads.0');
+    }
+
+    public function test_officer_gallery_supports_images_video_and_delete_controls(): void
+    {
+        Storage::fake('public');
+        $this->actingAs($this->admin());
+        $bytes = file_get_contents(public_path('images/uecfi-logo.png'));
+        $this->post('/admin/officers', [
+            'name' => 'Media officer', 'position' => 'Coordinator', 'status' => 'published', 'sort_order' => 0,
+            'photo_upload' => UploadedFile::fake()->createWithContent('portrait.png', $bytes),
+            'gallery_uploads' => [
+                UploadedFile::fake()->createWithContent('event.png', $bytes),
+                UploadedFile::fake()->create('recap.mp4', 20, 'video/mp4'),
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $officer = Officer::where('name', 'Media officer')->firstOrFail()->load(['photo', 'gallery']);
+        $this->assertCount(2, $officer->gallery);
+        $this->assertSame('public', $officer->photo->disk);
+        Storage::disk('public')->assertExists($officer->photo->path);
+        $video = $officer->gallery->firstWhere('is_video', true);
+        $this->assertNotNull($video);
+        $this->delete('/admin/media/'.$video->id)->assertRedirect();
+        $this->assertDatabaseMissing('officer_media', ['officer_id' => $officer->id, 'media_id' => $video->id]);
+        Storage::disk('public')->assertMissing($video->path);
+    }
+
+    public function test_new_media_uses_configured_r2_disk(): void
+    {
+        Storage::fake('r2');
+        config(['media.disk' => 'r2']);
+        $this->actingAs($this->admin());
+        $bytes = file_get_contents(public_path('images/uecfi-logo.png'));
+        $this->post('/admin/content/news', $this->payload([
+            'slug' => 'r2-upload',
+            'gallery_uploads' => [UploadedFile::fake()->createWithContent('r2.png', $bytes)],
+        ]))->assertSessionHasNoErrors();
+        $media = Content::where('slug', 'r2-upload')->firstOrFail()->gallery->firstOrFail();
+        $this->assertSame('r2', $media->disk);
+        Storage::disk('r2')->assertExists($media->path);
+        $this->get('/media/'.$media->id)->assertOk();
     }
 
     public function test_admin_can_delete_photo_and_video_and_all_their_references(): void

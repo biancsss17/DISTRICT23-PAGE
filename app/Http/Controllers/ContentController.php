@@ -7,6 +7,7 @@ use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\MediaStorage;
 use Illuminate\Validation\Rule;
 
 class ContentController extends Controller
@@ -49,18 +50,45 @@ class ContentController extends Controller
             'excerpt' => 'nullable|string|max:600', 'content' => 'required|string|max:100000', 'category' => 'nullable|string|max:80',
             'cover_id' => 'nullable|exists:media,id', 'cover_upload' => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200', 'published_at' => 'nullable|date|required_if:status,published', 'event_date' => 'nullable|date',
             'location' => 'nullable|string|max:255', 'status' => 'required|in:draft,published', 'featured' => 'nullable|boolean', 'sort_order' => 'required|integer|min:0|max:10000',
-            'gallery_uploads' => 'nullable|array|max:40', 'gallery_uploads.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200',
+            'gallery_uploads' => 'nullable|array|max:4', 'gallery_uploads.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200',
+        ], [
+            'cover_upload.max' => 'The cover file must be 50 MB or smaller.',
+            'gallery_uploads.*.max' => 'Each photo or video must be 50 MB or smaller.',
+            'gallery_uploads.max' => 'Choose no more than 4 slideshow files; the story limit is 3 photos and 1 video total, including the cover.',
         ]);
+        $galleryFiles = $r->file('gallery_uploads', []);
+        $coverFile = $r->file('cover_upload');
+        $currentGallery = $record->exists && ! $r->hasFile('gallery_uploads') ? $record->gallery : collect();
+        $currentCover = $record->exists ? $record->cover : null;
+        $coverId = $data['cover_id'] ?? $record->cover_id;
+        $coverIsReplaced = $coverFile || ($r->exists('cover_id') && (string) $coverId !== (string) $record->cover_id);
+        $coverMedia = $coverFile ? null : ($coverIsReplaced ? Media::find($coverId) : $currentCover);
+        $mediaKinds = collect($galleryFiles)->map(fn ($file) => in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'webm', 'ogg'], true) ? 'video' : 'photo')
+            ->concat($currentGallery->map(fn ($media) => $media->is_video ? 'video' : 'photo'));
+        if ($coverFile) {
+            $mediaKinds->push(in_array(strtolower($coverFile->getClientOriginalExtension()), ['mp4', 'webm', 'ogg'], true) ? 'video' : 'photo');
+        } elseif ($coverMedia) {
+            $mediaKinds->push($coverMedia->is_video ? 'video' : 'photo');
+        }
+        $maxPhotos = config('media.max_photos_per_item', 3);
+        $maxVideos = config('media.max_videos_per_item', 1);
+        if ($mediaKinds->filter(fn ($kind) => $kind === 'photo')->count() > $maxPhotos) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['gallery_uploads' => "Each content item can have up to {$maxPhotos} photos total, including its cover. Remove a photo or choose fewer uploads."]);
+        }
+        if ($mediaKinds->filter(fn ($kind) => $kind === 'video')->count() > $maxVideos) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['gallery_uploads' => "Each content item can have up to {$maxVideos} video total, including its cover. Remove a video or choose fewer uploads."]);
+        }
         $storedPaths = [];
         $gallery = [];
         unset($data['cover_upload'], $data['gallery_uploads']);
         $data['featured'] = $r->boolean('featured');
         $data['type'] = $type;
-        try { DB::transaction(function () use ($record, $data, &$gallery, $r, $type, &$storedPaths) {
+        $mediaStorage = app(MediaStorage::class);
+        try { DB::transaction(function () use ($record, $data, &$gallery, $r, $type, &$storedPaths, $mediaStorage) {
             if ($r->hasFile('cover_upload')) {
-                $path = $r->file('cover_upload')->store('cms', 'public');
-                $storedPaths[] = $path;
-                $data['cover_id'] = Media::create(['path' => $path, 'name' => 'Cover image', 'alt' => $data['title']])->id;
+                $cover = $mediaStorage->store($r->file('cover_upload'), 'Cover image', $data['title']);
+                $storedPaths[] = $cover;
+                $data['cover_id'] = $cover->id;
             }
             $record->fill($data);
             if (! $record->exists) {
@@ -68,14 +96,14 @@ class ContentController extends Controller
             } $record->save();
             if ($r->hasFile('gallery_uploads')) {
                 foreach ($r->file('gallery_uploads') as $file) {
-                    $path = $file->store('cms', 'public');
-                    $storedPaths[] = $path;
-                    $gallery[] = Media::create(['path' => $path, 'name' => mb_substr($file->getClientOriginalName(), 0, 255), 'alt' => $record->title])->id;
+                    $media = $mediaStorage->store($file, $file->getClientOriginalName(), $record->title);
+                    $storedPaths[] = $media;
+                    $gallery[] = $media->id;
                 }
                 $record->gallery()->sync(collect($gallery)->mapWithKeys(fn ($id, $i) => [$id => ['sort_order' => $i]])->all());
             }
         });
-        } catch (\Throwable $error) { foreach ($storedPaths as $path) Storage::disk('public')->delete($path); throw $error; }
+        } catch (\Throwable $error) { foreach ($storedPaths as $media) { if ($media instanceof Media) $mediaStorage->delete($media); } throw $error; }
 
         return redirect()->route('admin.content.edit', [$type, $record])->with('success', ucfirst($type).' saved.');
     }

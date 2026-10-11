@@ -26,7 +26,6 @@ class CmsSeeder extends Seeder
             ['statistics', 'Our community, in perspective.', 'A growing story of participation.'],
             ['news', 'Stories that bring us together.', 'The latest from our community.'],
             ['achievements', 'Small steps. Lasting impact.', 'Celebrating milestones that define our journey.'],
-            ['activities', 'Purpose, put into practice.', 'Discover ways to learn, connect and serve.'],
             ['officers', 'People behind the purpose.', 'Meet the people helping our community move forward.'],
         ] as $i => $s) {
             PageSection::firstOrCreate(['key' => $s[0]], ['title' => $s[1], 'description' => $s[2], 'sort_order' => $i]);
@@ -34,7 +33,6 @@ class CmsSeeder extends Seeder
         $samples = [
             'news' => ['A new chapter for our community', 'Making space for meaningful conversations', 'Looking forward, together'],
             'achievements' => ['Recognizing the spirit of service', 'A milestone in shared learning', 'Celebrating community participation'],
-            'activities' => ['Community learning circle', 'A day dedicated to service', 'Youth conversation and connection'],
         ];
         foreach ($samples as $type => $titles) {
             foreach ($titles as $i => $title) {
@@ -42,7 +40,7 @@ class CmsSeeder extends Seeder
                     'type' => $type, 'title' => $title, 'excerpt' => 'Sample content • An invitation to connect, share ideas and build a stronger community.',
                     'content' => "This is sample content for the UECFI website. It does not describe a verified organizational event or achievement.\n\nAn administrator can replace this story, add an approved photograph and publish the details through the content manager.",
                     'category' => 'Sample content', 'status' => 'published', 'featured' => $i === 0, 'published_at' => now()->subDays($i + 1), 'sort_order' => $i,
-                    'event_date' => $type === 'news' ? null : now()->toDateString(), 'location' => $type === 'activities' ? 'To be confirmed' : null,
+                    'event_date' => $type === 'news' ? null : now()->toDateString(), 'location' => null,
                 ]);
             }
         }
@@ -69,7 +67,6 @@ class CmsSeeder extends Seeder
         $sampleStories = [
             ['news', 'A new chapter for our community', 'sample-community-circle.png', ['sample-service-recognition.png', 'sample-uecfi-slideshow.webm']],
             ['achievements', 'Recognizing the spirit of service', 'sample-service-recognition.png', ['sample-community-circle.png', 'sample-uecfi-slideshow.webm']],
-            ['activities', 'Community learning circle', 'sample-community-circle.png', ['sample-service-recognition.png', 'sample-mountain-sunrise.png', 'sample-uecfi-slideshow.webm']],
         ];
         foreach ($sampleStories as [$type, $title, $cover, $galleryFiles]) {
             $story = Content::where('type', $type)->where('slug', Str::slug($title))->first();

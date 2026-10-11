@@ -30,7 +30,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Administrator::class
     Route::delete('/settings/home/media/{media}', [MediaController::class, 'destroy'])->name('settings.home.media.destroy');
     Route::put('/sections', [SettingsController::class, 'sections'])->name('sections');
     Route::resource('/officers', OfficerController::class)->except('show');
-    Route::prefix('content/{type}')->where(['type' => 'news|achievements|activities'])->name('content.')->group(function () {
+    Route::prefix('content/{type}')->where(['type' => 'news|achievements'])->name('content.')->group(function () {
         Route::get('/', [ContentController::class, 'index'])->name('index');
         Route::get('/create', [ContentController::class, 'create'])->name('create');
         Route::post('/', [ContentController::class, 'store'])->name('store');
@@ -41,5 +41,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Administrator::class
         Route::get('/{record}/preview', [ContentController::class, 'preview'])->name('preview');
     });
 });
-Route::get('/{type}', [PublicController::class, 'index'])->where('type', 'news|achievements|activities')->name('content.index');
-Route::get('/{type}/{slug}', [PublicController::class, 'show'])->where('type', 'news|achievements|activities')->name('content.show');
+Route::get('/{type}', [PublicController::class, 'index'])->where('type', 'news|achievements')->name('content.index');
+Route::get('/{type}/{slug}', [PublicController::class, 'show'])->where('type', 'news|achievements')->name('content.show');

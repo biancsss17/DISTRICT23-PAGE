@@ -9,8 +9,8 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $counts = collect(['news', 'achievements', 'activities'])->mapWithKeys(fn ($t) => [$t => Content::where('type', $t)->published()->count()])->all();
+        $counts = collect(['news', 'achievements'])->mapWithKeys(fn ($t) => [$t => Content::where('type', $t)->published()->count()])->all();
         $counts['officers'] = Officer::where('status', 'published')->count();
-        return view('admin.dashboard', ['counts' => $counts, 'recent' => Content::latest('updated_at')->limit(6)->get()]);
+        return view('admin.dashboard', ['counts' => $counts, 'recent' => Content::whereIn('type', ['news', 'achievements'])->latest('updated_at')->limit(6)->get()]);
     }
 }

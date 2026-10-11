@@ -12,4 +12,9 @@ class Officer extends Model
     {
         return $this->belongsTo(Media::class, 'photo_id');
     }
+
+    public function gallery()
+    {
+        return $this->belongsToMany(Media::class, 'officer_media')->withPivot('sort_order')->orderByPivot('sort_order');
+    }
 }

@@ -33,16 +33,15 @@ There is no public registration, default production password or pretend password
 
 ## Content studio
 - Dashboard reports published content counts and recent edits.
-- News, Achievements and Activities support create/edit/delete, draft/publish, scheduled publication, featured flag, unique slugs and numeric ordering.
+- News and Achievements support create/edit/delete, draft/publish, scheduled publication, featured flag, unique slugs and numeric ordering. Activities remain removed from the public site and admin, as requested.
 - A published item needs a publication time at or before now to appear publicly.
 - Preview saved drafts using the private Preview link.
-- Upload cover images directly from each news, achievement, and activity editor.
-- Upload activity gallery images directly inside the activity editor; new uploads replace the current gallery.
-- Upload officer portraits directly inside each officer editor.
+- Upload cover images/videos and galleries directly from News and Achievements editors. Each item supports up to 3 photos and 1 video total, including its cover; gallery uploads replace the previous gallery.
+- Upload officer portraits and galleries directly inside each officer editor. The portrait counts toward the 3-photo total; each officer supports up to 1 video.
 - Homepage cover images are selected or uploaded directly from Home settings.
 - The admin Media Library screen has been removed. Uploaded files are still stored safely and served through their content references.
 - Officers are grouped by hierarchy level and ordered within each level using Sort order. Profiles open in accessible dialogs.
-- Upload JPG, PNG, WebP or GIF images up to 5 MB each (maximum 12 in one request).
+- Media accepts JPG, PNG, WebP, GIF, MP4, WebM and OGG, with a maximum of 50 MB per file. Homepage slides allow up to 10 new files per save.
 - Media in use cannot be deleted until its references are removed.
 - Edit Website provides homepage text, statistics, buttons, imagery, section headings, order and visibility.
 - Brand Settings controls logo, favicon and colors. The original supplied logo is installed unchanged.
@@ -67,7 +66,7 @@ There is no public registration, default production password or pretend password
 10. Run php artisan config:cache, php artisan route:cache and php artisan view:cache.
 11. Back up the database and storage/app/public before upgrades.
 
-Uploaded images are served through the /media/{id} route; symlinks are not required.
+Uploaded media is served through the /media/{id} route; symlinks are not required. Existing files keep their recorded storage disk.
 No Node.js process, queue worker or build server is required on hosting.
 The implementation uses Blade, CSS, vanilla JavaScript and local GSAP / ScrollTrigger 3.13.0.
 The starter Tailwind CDN form is retained but the CMS design uses its own stylesheet, avoiding a browser-side CSS compiler.
@@ -88,9 +87,9 @@ Screenshots are stored privately under storage/app/private.
 
 ## Architecture
 - contents: common news/achievement/activity fields, indexed type/status/date, creator and cover references.
-- activity_images: ordered many-to-many gallery.
-- officers: hierarchy, term, biography and portrait.
-- media: stored image path, original display name and alt text.
+- activity_images: ordered content gallery relation retained in the database; Activity remains hidden/removed in the UI.
+- officers and officer_media: hierarchy, term, biography, portrait and ordered photo/video gallery.
+- media: storage disk, stored path, original display name and alt text.
 - site_settings: validated content and branding fields.
 - page_sections: editable headings, description, order and visibility.
 - users: standard hashed passwords with explicit is_admin flag.

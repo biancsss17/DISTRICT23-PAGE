@@ -10,9 +10,9 @@ class PublicController extends Controller
 {
     public function home()
     {
-        $sections = PageSection::where('visible', true)->orderBy('sort_order')->get();
-        $featured = collect(['news', 'achievements', 'activities'])->mapWithKeys(fn ($type) => [$type => Content::with('cover')->published()->where('type', $type)->orderByDesc('featured')->orderBy('sort_order')->latest('published_at')->limit(3)->get()]);
-        $officers = Officer::with('photo')->where('status', 'published')->orderBy('sort_order')->orderBy('name')->limit(4)->get();
+        $sections = PageSection::where('visible', true)->where('key', '!=', 'activities')->orderBy('sort_order')->get();
+        $featured = collect(['news', 'achievements'])->mapWithKeys(fn ($type) => [$type => Content::with('cover')->published()->where('type', $type)->orderByDesc('featured')->orderBy('sort_order')->latest('published_at')->limit(3)->get()]);
+        $officers = Officer::with(['photo', 'gallery'])->where('status', 'published')->orderBy('sort_order')->orderBy('name')->limit(4)->get();
 
         return view('public.home', compact('sections', 'featured', 'officers'));
     }
@@ -35,7 +35,7 @@ class PublicController extends Controller
 
     public function officers()
     {
-        $officers = Officer::with('photo')->where('status', 'published')->orderBy('sort_order')->orderBy('name')->get();
+        $officers = Officer::with(['photo', 'gallery'])->where('status', 'published')->orderBy('sort_order')->orderBy('name')->get();
         $section = PageSection::where('key', 'officers')->firstOrFail();
 
         return view('public.officers',compact('officers','section'));
