@@ -36,7 +36,7 @@ class OfficerController extends Controller
 
     private function save(Request $r, Officer $officer)
     {
-        $data = $r->validate(['name' => 'required|string|max:160', 'position' => 'required|string|max:160', 'biography' => 'nullable|string|max:10000', 'email' => 'nullable|email|max:255', 'social_url' => 'nullable|url:http,https|max:255', 'photo_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120', 'sort_order' => 'required|integer|min:0|max:10000', 'status' => 'required|in:draft,published']);
+        $data = $r->validate(['name' => 'required|string|max:160', 'position' => 'required|string|max:160', 'term' => 'nullable|string|max:160', 'biography' => 'nullable|string|max:10000', 'email' => 'nullable|email|max:255', 'social_url' => 'nullable|url:http,https|max:255', 'photo_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120', 'sort_order' => 'required|integer|min:0|max:10000', 'status' => 'required|in:draft,published']);
         unset($data['photo_upload']);
         if ($r->hasFile('photo_upload')) {
             $path = $r->file('photo_upload')->store('cms', 'public');

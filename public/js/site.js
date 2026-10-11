@@ -58,6 +58,7 @@ let intro,finished=false,previousFocus;
 function completeIntro(){
  if(finished)return;finished=true;intro?.kill();
  if(splash) splash.hidden=true;
+ document.documentElement.classList.remove('intro-started');
  document.documentElement.classList.remove('intro-pending');
  document.querySelectorAll('[data-intro-inert]').forEach(el=>{el.inert=false;el.removeAttribute('data-intro-inert');});
  document.body.style.overflow='';
@@ -67,6 +68,7 @@ function completeIntro(){
 if(splash){
  let seen=false;try{seen=sessionStorage.getItem('uecfi-intro')==='1';}catch{}
  if((!seen||new URLSearchParams(location.search).get('show-intro')==='1')&&!reduced&&gs&&!location.search.includes('editor-preview')){
+  document.documentElement.classList.add('intro-started');
   previousFocus=document.activeElement;splash.hidden=false;document.body.style.overflow='hidden';
   // Keep only the intro accessible while it is visible.
   document.querySelectorAll('body > header, body > footer').forEach(el=>{el.inert=true;el.setAttribute('data-intro-inert','');});

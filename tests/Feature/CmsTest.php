@@ -166,12 +166,15 @@ class CmsTest extends TestCase
     public function test_officer_crud_and_hierarchy(): void
     {
         $this->actingAs($this->admin());
-        $data = ['name' => 'New officer', 'position' => 'Coordinator', 'biography' => 'Approved biography', 'status' => 'draft', 'hierarchy_level' => 3, 'sort_order' => 2];
+        $data = ['name' => 'New officer', 'position' => 'Coordinator', 'term' => '2026–2028', 'biography' => 'Approved biography', 'status' => 'draft', 'hierarchy_level' => 3, 'sort_order' => 2];
         $this->post('/admin/officers', $data)->assertSessionHasNoErrors();
         $officer = Officer::where('name', 'New officer')->firstOrFail();
+        $this->assertSame('2026–2028', $officer->term);
         $this->get('/officers')->assertDontSee('New officer');
-        $this->put('/admin/officers/'.$officer->id, array_replace($data, ['status' => 'published']))->assertSessionHasNoErrors();
-        $this->get('/officers')->assertSee('New officer')->assertSee('Approved biography');
+        $this->put('/admin/officers/'.$officer->id, array_replace($data, ['status' => 'published', 'term' => '2027–2029']))->assertSessionHasNoErrors();
+        $officer->refresh();
+        $this->assertSame('2027–2029', $officer->term);
+        $this->get('/officers')->assertSee('New officer')->assertSee('Approved biography')->assertSee('2027–2029');
         $this->delete('/admin/officers/'.$officer->id)->assertRedirect();
         $this->assertDatabaseMissing('officers', ['id' => $officer->id]);
     }
