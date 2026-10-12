@@ -9,7 +9,7 @@
 <meta name="description" content="{{ $site['hero_description'] }}">
 <link rel="icon" href="{{ $site['favicon_url'] }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}?v={{ filemtime(public_path('css/site.css')) }}">
-<link rel="stylesheet" href="{{ asset('css/hero-background.css') }}">
+<link rel="stylesheet" href="{{ asset('css/hero-background.css') }}?v={{ filemtime(public_path('css/hero-background.css')) }}">
 <style>:root{--navy:{{ $site['primary_color'] }};--gold:{{ $site['secondary_color'] }};--purple:{{ $site['accent_color'] }}}</style>
 <script src="{{ asset('js/vendor/gsap.min.js') }}" defer></script>
 <script src="{{ asset('js/vendor/ScrollTrigger.min.js') }}" defer></script>
