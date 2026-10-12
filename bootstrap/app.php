@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Railway terminates HTTPS at its edge proxy. Trust its forwarded
+        // scheme so Laravel generates HTTPS asset and form URLs in production.
+        $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/admin/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

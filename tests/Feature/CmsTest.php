@@ -56,6 +56,17 @@ class CmsTest extends TestCase
         $this->get('/missing')->assertNotFound();
     }
 
+    public function test_public_asset_urls_respect_https_forwarded_by_the_railway_proxy(): void
+    {
+        $this->withHeader('X-Forwarded-Proto', 'https')
+            ->get('http://fysd23.test/')
+            ->assertOk()
+            ->assertSee('https://fysd23.test/css/site.css', false)
+            ->assertSee('https://fysd23.test/js/site.js', false)
+            ->assertSee('@keyframes splash-fallback-reveal', false)
+            ->assertSee('window.setTimeout(()=>document.documentElement.classList.remove(\'intro-pending\'),8000)', false);
+    }
+
     public function test_guests_and_non_admins_cannot_access_cms(): void
     {
         foreach (['/admin', '/admin/content/news', '/admin/settings/home', '/admin/officers'] as $url) {
