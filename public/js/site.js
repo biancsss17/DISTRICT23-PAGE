@@ -75,10 +75,9 @@ if(splash){
   [...document.querySelector('#main').children].filter(el=>el!==splash).forEach(el=>{el.inert=true;el.setAttribute('data-intro-inert','');});
   document.querySelector('#skip-intro').focus();
   intro=gs.timeline({onComplete:completeIntro});
-  intro.from('.splash-glow',{opacity:0,duration:.7},.2)
-   .from('.splash-logo',{opacity:0,scale:.82,filter:'blur(12px)',duration:1.6,ease:'power2.out'},.7)
-   .addLabel('logo-revealed','>')
-   .from('.splash-welcome',{opacity:0,y:14,duration:.5},'logo-revealed+=0.1')
+  intro.from('.splash-glow',{opacity:0,duration:.7},0)
+   .fromTo('.splash-logo',{opacity:0,scale:.82,filter:'blur(12px)'},{opacity:1,scale:1,filter:'blur(0px)',duration:.65,ease:'power2.out'},.1)
+   .fromTo('.splash-welcome',{opacity:0,y:14},{opacity:1,y:0,duration:.5,ease:'power2.out'},.22)
    .to('.star-flash',{opacity:1,scale:40,rotation:30,duration:.6,ease:'power3.in'},4.8)
    .to(splash,{opacity:0,duration:.25},5.4);
   document.querySelector('#skip-intro').addEventListener('click',completeIntro);
