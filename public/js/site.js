@@ -26,6 +26,7 @@ const sectionTargets=new Map(sectionLinks.map(link=>{
  const heading=key==='home'?target:target?.querySelector('.section-heading, .stats-heading, .heritage-copy h2');
  return [key,{link,target,heading:heading||target}];
 }).filter(([,item])=>item.target));
+let navigatingTo=null,scrollSettleTimer=null;
 function setActiveSection(key){
  sectionTargets.forEach((item,name)=>{
   const active=name===key;
@@ -34,14 +35,18 @@ function setActiveSection(key){
  });
 }
 function updateActiveSection(){
- if(!sectionTargets.size)return;
- const line=(nav?.getBoundingClientRect().bottom||0)+24;
+ if(!sectionTargets.size||navigatingTo)return;
+ const line=(nav?.getBoundingClientRect().bottom||0)+70;
  let current='home';
  for(const [key,item] of sectionTargets){
   if(key==='home')continue;
   if(item.heading.getBoundingClientRect().top<=line)current=key;
  }
  setActiveSection(current);
+}
+function settleNavigation(){
+ clearTimeout(scrollSettleTimer);
+ scrollSettleTimer=setTimeout(()=>{navigatingTo=null;updateActiveSection();},220);
 }
 sectionLinks.forEach(link=>link.addEventListener('click',event=>{
  if(location.pathname!=='/'&&location.pathname!=='')return;
@@ -50,6 +55,7 @@ sectionLinks.forEach(link=>link.addEventListener('click',event=>{
  event.preventDefault();
  document.querySelector('#main-nav')?.classList.remove('open');
  toggle?.setAttribute('aria-expanded','false');
+ navigatingTo=key;
  if(key==='home'){
   history.pushState(null,'','/#top');
   window.scrollTo({top:0,behavior:reduced?'auto':'smooth'});
@@ -61,16 +67,21 @@ sectionLinks.forEach(link=>link.addEventListener('click',event=>{
   window.scrollTo({top:Math.max(0,top),behavior:reduced?'auto':'smooth'});
  }
  setActiveSection(key);
+ settleNavigation();
 }));
 if(sectionTargets.size){
  let sectionPending=false;
- window.addEventListener('scroll',()=>{if(!sectionPending){sectionPending=true;requestAnimationFrame(()=>{sectionPending=false;updateActiveSection();});}},{passive:true});
+ window.addEventListener('scroll',()=>{
+  if(navigatingTo)settleNavigation();
+  if(!sectionPending){sectionPending=true;requestAnimationFrame(()=>{sectionPending=false;updateActiveSection();});}
+ },{passive:true});
  window.addEventListener('resize',updateActiveSection,{passive:true});
  window.addEventListener('popstate',()=>{
   const key=location.hash.replace('#','')||'home';
-  if(key==='top'||key==='home'){window.scrollTo({top:0,behavior:'auto'});setActiveSection('home');return;}
+  navigatingTo=key==='top'?'home':key;
+  if(key==='top'||key==='home'){window.scrollTo({top:0,behavior:'auto'});setActiveSection('home');settleNavigation();return;}
   const item=sectionTargets.get(key);
-  if(item){const offset=Math.max(131,(nav?.getBoundingClientRect().bottom||0)+41);window.scrollTo({top:window.scrollY+item.heading.getBoundingClientRect().top-offset,behavior:'auto'});setActiveSection(key);}
+  if(item){const offset=Math.max(131,(nav?.getBoundingClientRect().bottom||0)+41);window.scrollTo({top:window.scrollY+item.heading.getBoundingClientRect().top-offset,behavior:'auto'});setActiveSection(key);settleNavigation();}
  });
  updateActiveSection();
 }
