@@ -6,8 +6,8 @@
         <a href="{{ asset('tutorials/Admin_Walkthrough.html') }}" target="_blank" rel="noopener">
             <strong>Watch video guide</strong><span>See real clicks, typing, and captions</span>
         </a>
-        <a href="{{ asset('tutorials/D23_Admin_Complete_Guide.pdf') }}" target="_blank" rel="noopener">
-            <strong>Read PDF manual</strong><span>Follow the illustrated steps and explanations</span>
+        <a href="{{ asset('tutorials/D23_Admin_Complete_Guide.pdf') }}?v=process-guide-2" target="_blank" rel="noopener">
+            <strong>Read PDF manual</strong><span>Follow 20 complete admin workflows</span>
         </a>
     </div>
 </details>
