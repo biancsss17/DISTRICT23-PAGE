@@ -31,26 +31,15 @@ php artisan serve --host=127.0.0.1 --port=8005
 The administrator command securely prompts for a password (12+ characters).
 There is no public registration, default production password or pretend password-reset endpoint.
 
-## Content studio
-- Dashboard reports published content counts and recent edits.
-- News and Achievements support create/edit/delete, draft/publish, scheduled publication, featured flag, unique slugs and numeric ordering. Activities remain removed from the public site and admin, as requested.
-- A published item needs a publication time at or before now to appear publicly.
-- Preview saved drafts using the private Preview link.
-- Upload cover images/videos and galleries directly from News and Achievements editors. Each item supports up to 3 photos and 1 video total, including its cover; gallery uploads replace the previous gallery.
-- Upload officer portraits and galleries directly inside each officer editor. The portrait counts toward the 3-photo total; each officer supports up to 1 video.
-- Homepage cover images are selected or uploaded directly from Home settings.
-- The admin Media Library screen has been removed. Uploaded files are still stored safely and served through their content references.
-- Officers are grouped by hierarchy level and ordered within each level using Sort order. Profiles open in accessible dialogs.
-- Media accepts JPG, PNG, WebP, GIF, MP4, WebM and OGG, with a maximum of 50 MB per file. Homepage slides allow up to 10 new files per save.
-- Media in use cannot be deleted until its references are removed.
-- Edit Website provides homepage text, statistics, buttons, imagery, section headings, order and visibility.
-- Brand Settings controls logo, favicon and colors. The original supplied logo is installed unchanged.
-- Navigation changes the six public navigation labels.
-- Website Settings controls the organization, contact details and social links.
-- Footer controls its heading, supporting text and copyright.
-- Hero text and colors update in the editor preview as you type. Other changes appear after saving and refreshing the preview.
-- Settings save directly to the public website. Article drafts are separate.
-- Account page allows password changes.
+## Visual editor
+- `/admin` is the only management interface. The former dashboard, separate content forms, settings pages and account page are removed.
+- Content tab edits the header, organization, homepage, navigation and footer. Design controls fonts, sizes, colors and the continuous background. Sections controls homepage headings, order and visibility.
+- Media tab manages homepage cover slides and the shared media library. Uploaded files can be permanently deleted there or from their content records. Delete clears references across the site.
+- Records tab shows published counts, recent edits and management for News, Achievements and Officers. Create, edit, private preview and delete are available there. Activities remain removed from the public site and editor.
+- News and Achievements retain draft/publish, scheduled publication, featured flag, unique slugs and numeric ordering. A published item appears publicly only after its publication time.
+- Content and officers allow up to 3 photos and 1 video per item, counting the cover or portrait; new gallery uploads replace the current gallery. Maximum file size is 50 MB.
+- Page settings are saved as a private draft and become public only after Publish changes. Record changes and media deletion apply immediately. Versions & administration contains previous-publication restore, draft discard and logout. Passwords are managed outside the editor by an authorized site administrator.
+- Existing content tables and media records are shared by the public site and editor. Do not drop them when removing legacy admin code.
 - Text content is escaped; arbitrary HTML/JavaScript is never executed.
 
 ## Shared hosting
@@ -81,8 +70,7 @@ php artisan view:cache
 php artisan route:cache
 php artisan route:clear
 ```
-Feature tests exercise public routes, private drafts, login/logout, authorization, CRUD, uploads, gallery references, safe settings and output escaping.
-The browser smoke script at scripts/browser-check.cjs uses the local bundled Playwright runtime for this workstation. It is a development tool, not a deployment dependency. Set CMS_TEST_PASSWORD in the process environment before running it.
+Feature tests exercise public routes, private drafts, authorization, record CRUD, uploads, media deletion and editor settings.
 Screenshots are stored privately under storage/app/private.
 
 ## Architecture
@@ -93,9 +81,9 @@ Screenshots are stored privately under storage/app/private.
 - site_settings: validated content and branding fields.
 - page_sections: editable headings, description, order and visibility.
 - users: standard hashed passwords with explicit is_admin flag.
-- app/Http/Controllers: separate public, authentication, content, media, officer, settings and account controllers.
+- app/Http/Controllers: public, authentication, media, visual page editor and record editor controllers.
 - resources/views/layouts, public, admin, partials: reusable Blade templates.
-- public/css/site.css and admin.css: responsive interfaces.
+- public/css/site.css, page-editor.css and admin-login.css: responsive interfaces.
 - public/js/site.js: splash, motion, navigation, dialogs, counters and gallery.
-- public/js/admin.js: form feedback, delete confirmation and live preview.
+- public/js/page-editor.js and editor-records.js: page preview, drafts, content editing and media management.
 

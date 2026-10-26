@@ -1,4 +1,4 @@
-<article class="content-card" data-reveal>
+<article class="content-card" data-reveal @if(\App\Services\PageEditor::preview()) data-editor-record="{{ $record->type }}:{{ $record->id }}" @endif>
 <a class="card-image" href="{{ route('content.show',[$record->type,$record->slug]) }}">
 @if($record->cover)<img src="{{ $record->cover->url }}" alt="{{ $record->cover->alt ?: $record->title }}" loading="lazy">
 @else<div class="image-placeholder variant-{{ $record->id % 3 }}"><span>✦</span><small>{{ $record->category ?: 'UECFI' }}</small></div>@endif

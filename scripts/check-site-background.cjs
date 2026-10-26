@@ -2,7 +2,7 @@ const {chromium}=require('C:/Users/User/.cache/codex-runtimes/codex-primary-runt
 (async()=>{const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
- for(const path of ['/','/news','/achievements','/activities','/officers']){
+ for(const path of ['/','/news','/achievements','/officers']){
   const response=await page.goto('http://127.0.0.1:8005'+path,{waitUntil:'networkidle'});
   const state=await page.evaluate(()=>({background:document.querySelectorAll('.site-ribbons i').length,fixed:getComputedStyle(document.querySelector('.site-ribbons')).position,overflow:document.documentElement.scrollWidth>innerWidth}));
   console.log(JSON.stringify({width,path,status:response.status(),...state,errors}));if(response.status()!==200||state.background!==6||state.overflow||errors.length)process.exitCode=1;

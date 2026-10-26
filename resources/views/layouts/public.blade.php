@@ -15,6 +15,7 @@
 <script src="{{ asset('js/vendor/ScrollTrigger.min.js') }}" defer></script>
 <script src="{{ asset('js/site.js') }}?v={{ filemtime(public_path('js/site.js')) }}" defer></script>
 <script src="{{ asset('js/background-interaction.js') }}" defer></script>
+<style id="page-editor-style">{!! $site['editor_css'] ?? '' !!}</style>
 </head>
 <body class="@yield('bodyclass')" id="top">
 <div class="site-ribbons hero-ribbons" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>

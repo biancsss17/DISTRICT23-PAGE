@@ -1,0 +1,18 @@
+.admin-guide{position:relative;flex:none;padding:0;border:0;font:inherit}
+.admin-guide>summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:38px;padding:8px 13px;border:1px solid #d6b96f;border-radius:9px;background:#fff4d9;color:#183047;font-size:13px;font-weight:700;line-height:1.2;white-space:nowrap;cursor:pointer}
+.admin-guide>summary::-webkit-details-marker{display:none}
+.admin-guide>summary:hover,.admin-guide[open]>summary{background:#f7e7bd}
+.admin-guide>summary:focus-visible{outline:2px solid #547acc;outline-offset:3px}
+.admin-guide>summary span{font-size:16px;line-height:1;transition:transform .2s}
+.admin-guide[open]>summary span{transform:rotate(180deg)}
+.admin-guide-card{position:absolute;top:calc(100% + 9px);right:0;z-index:50;width:min(260px,calc(100vw - 32px));padding:13px;background:#fff;color:#183047;border:1px solid #dce3e8;border-radius:12px;box-shadow:0 18px 50px #102b4e30}
+.admin-guide-title{margin:2px 5px 10px;color:#627386;font-size:12px;font-weight:700}
+.admin-guide-card>a{display:block;padding:11px 12px;border-radius:8px;color:#183047;text-decoration:none}
+.admin-guide-card>a:hover,.admin-guide-card>a:focus-visible{background:#f2f5f8}
+.admin-guide-card strong{display:block;font-size:13px}
+.admin-guide-card span{display:block;margin-top:2px;color:#627386;font-size:11px}
+.admin-guide-sidebar{margin:8px 0 4px}
+.admin-guide-sidebar>summary{width:100%;justify-content:space-between;background:#122d4f;border-color:#315171;color:#f5f0e4}
+.admin-guide-sidebar>summary:hover,.admin-guide-sidebar[open]>summary{background:#1a3b64}
+.admin-guide-sidebar .admin-guide-card{left:0;right:auto;width:100%;min-width:198px}
+@media(max-width:700px){.admin-guide-editor .admin-guide-card{right:0}}

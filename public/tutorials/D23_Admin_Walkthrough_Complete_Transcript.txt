@@ -1,0 +1,207 @@
+D23 VISUAL EDITOR - CURRENT ADMIN VIDEO GUIDE
+
+Recorded on a disposable local database. No production data or accounts were used.
+
+01. Welcome to the current admin
+Sign in with your administrator account. This recording uses a disposable demo account.
+
+02. One visual editor
+The real homepage appears on the right. Content, Design, Media, Sections and Records are managed on the left; repeated controls work alike.
+
+03. Open the admin guide
+The Admin guide menu offers this video and a detailed illustrated manual.
+
+04. Expand the page preview
+Edit panel hides the controls temporarily so you can inspect more of the real homepage. Click again to restore them.
+
+05. Click the actual page to edit
+Click editable text in the live preview. The matching Content field opens and receives focus.
+
+06. Open a story from the live page
+Click a News or Achievement card in the page preview to edit that saved record. Officer cards use the same shortcut.
+
+07. Edit homepage text
+Home fields control the hero title, supporting copy, buttons and other homepage wording.
+
+08. Buttons and destinations
+Type a button label and its destination. Use an internal path or an approved URL, then check the public link.
+
+09. Statistics and section links
+The four statistic values and labels, note, and News, Achievements and Officers link text are editable in Home.
+
+10. Header and contact
+Header identity, organization and contact details are in Content. Type to preview supported text changes.
+
+11. Contact fields and links
+Update the organization name, district, email, phone, address and social links here. Enter complete URLs for social links.
+
+12. Logo and brand colors
+Choose stored imagery for the logo and favicon, and edit the palette without leaving the visual editor.
+
+13. Navigation labels
+Edit menu wording here. Check each destination after publishing.
+
+14. Footer content
+The footer heading, supporting text and copyright share this Content panel.
+
+15. Typography controls
+Choose a page part, then set its font, size, weight, alignment and color.
+
+16. Repeat the same style steps elsewhere
+Other font choices and page parts use this same target, font, size, weight, alignment and color workflow.
+
+17. Reset a style
+Reset this part to original removes the selected typography override.
+
+18. Background gradients
+Choose Original, Solid or Gradient. The cover and footer keep their own backgrounds.
+
+19. Solid background option
+A single color is another design option. Use Original design to return to the existing continuous background.
+
+20. Section spacing
+Spacing changes can be tested in desktop, tablet and phone preview before publication.
+
+21. Tablet preview
+The viewport buttons change only the editor preview size.
+
+22. Phone preview
+Always review small screens; the same content adapts responsively.
+
+23. Check dark mode
+The website has light and dark appearances. Use the preview switch to inspect contrast before publishing colors or typography.
+
+24. Cover slideshow
+Choose up to 20 photos or videos. Move selected slides with arrows; Remove only takes a slide out of rotation.
+
+25. Upload a photo
+Each file may be up to 50 MB. Upload adds it to the library immediately; publish controls homepage use.
+
+26. Select logo, favicon and palette
+A library image can be selected as a logo or favicon. Brand colors update the page theme; publish only after checking contrast.
+
+27. Upload a video
+Videos use the same media library. This disposable sample is used only for the guide.
+
+28. 50 MB upload validation
+A file over 50 MB is rejected before upload. Choose a smaller photo or video and try again.
+
+29. Order and remove
+Use the arrows to reorder slides. Remove changes the draft selection without deleting the file.
+
+30. Add a stored slide again
+A removed slide stays in the media library. Add slide puts it back without another upload. The 20-slide cap uses the same limit-message pattern shown for other media counts.
+
+31. Manage sections
+Change section headings, descriptions, display order and visibility without deleting their records.
+
+32. Visibility and order
+Visible hides a section without deleting its stories. Numeric Order changes the section sequence.
+
+33. Edit section heading and order
+Type a heading and description, change its numeric order, and turn visibility back on before publishing.
+
+34. Select a section from the page
+Click a section heading in the live preview to jump to its controls in the Sections tab.
+
+35. Section preview
+Save draft to refresh the actual page preview. The public site is still unchanged.
+
+36. Save with Ctrl+S
+Ctrl+S saves the same private page draft as Save draft. It does not publish or save an open story form.
+
+37. Publish page changes
+Publish applies the saved page draft on this installation. Record edits are separate and save immediately.
+
+38. Restore and discard
+Restore previous publication returns prior page settings. Discard draft removes only unpublished page changes.
+
+39. Discard a draft
+Discard removes unpublished page changes. Uploaded files stay in the media library.
+
+40. Records overview
+Published counts and recent updates are in Records. Open News, Achievements or Officers here.
+
+41. Open a recent update
+Click Recent updates to open an existing record directly. This is a shortcut to the same editor used by Manage News, Achievements and Officers.
+
+42. Unsaved record warning
+Leaving a changed record asks whether to discard the unsaved form. Page-draft changes have a similar leave-page warning.
+
+43. Confirm discard and return
+After accepting the warning, the temporary text is gone and the record list is unchanged. Cancel to keep editing.
+
+44. Create a News item
+Enter title, slug, summary, body, publication status, schedule, cover and optional gallery.
+
+45. Clear validation
+An invalid slug displays a clear error; nothing was saved. Email, URL and other field errors follow this same fix-and-save pattern.
+
+46. Category, featured flag and order
+A story can be categorized, featured and sorted. Set Published at and Status to control when it appears publicly.
+
+47. Three-photo limit
+The cover counts toward the 3-photo limit. Four photos are rejected with a clear message; remove an extra gallery photo.
+
+48. One-video limit
+A content item can contain only one video. Two gallery videos are rejected before the record is saved.
+
+49. Save cover and gallery
+This valid item has a cover photo, one gallery photo and one gallery video. Reopen it to verify all three files.
+
+50. Save and verify News
+The save message confirms the record. Preview shows the saved article, including drafts, privately.
+
+51. Delete a photo
+Delete photo permanently removes this disposable file and its database references. It is different from removing a cover slide.
+
+52. Delete a gallery video
+Saved gallery videos have their own Delete video button. Confirming permanently removes this file from every reference.
+
+53. Delete a gallery photo
+Gallery photos use the same permanent delete control. Removing a story record is a separate action.
+
+54. Edit an existing item
+Reopen any saved record, change its fields, and save again. The public page uses the updated content.
+
+55. Private preview and delete
+The list provides Edit, Preview and Delete. Delete asks for confirmation.
+
+56. Private article preview
+This saved article is previewed through an administrator-only route. Drafts can be checked here too.
+
+57. Achievements
+Achievements use the same story editor and add an achievement date.
+
+58. Save an unpublished draft record
+A draft Achievement saves immediately in Records but does not appear on the public site. Preview remains available to administrators.
+
+59. Publish an Achievement record
+Changing this record to Published and saving makes it eligible for the public section when its publication time has arrived.
+
+60. Achievement saved and removed
+The disposable achievement was saved, verified in the list, then deleted after confirmation.
+
+61. Officer profiles
+Add name, position, term, biography, portrait, gallery, order and publication status.
+
+62. Officer media
+The portrait has its own permanent delete control. Gallery photos and videos have separate controls too.
+
+63. Officer gallery video control
+An officer can also have gallery media. This removes the saved video without deleting the profile.
+
+64. Officer edit and delete
+The term was updated and saved. The disposable profile and portrait were removed after confirmation.
+
+65. Delete a video
+Delete video permanently removes the disposable upload wherever it is referenced.
+
+66. Confirm deletion
+The uploaded video is gone from the library. Always check the exact file before confirming.
+
+67. Finish safely
+The former password-change form is removed. Use Log out to end your session. Account resets are handled separately by an authorized administrator.
+
+68. Guide complete
+The new editor manages the page and content in one place. These examples changed only a disposable local guide database.
