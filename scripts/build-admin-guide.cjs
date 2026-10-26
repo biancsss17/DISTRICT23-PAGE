@@ -15,6 +15,35 @@ fs.mkdirSync(frames, { recursive: true });
 console.log('Guide output: ' + out);
 const transcript = [];
 let chapter = 0;
+const processVideo = process.env.D23_GUIDE_PROCESS_VIDEO === '1';
+const processChapters = {
+  'Welcome to the current admin': ['Sign in', 'Open /admin/login, enter your administrator email and password, then select Sign in.'],
+  'One visual editor': ['Open the visual editor', 'Choose Content, Design, Media, Sections or Records. The page preview is on the right.'],
+  'Edit homepage text': ['Change homepage text', 'Open Content > Home. Type the hero, button, statistics and section wording.'],
+  'Header and contact': ['Change identity and links', 'Open Header & contact details, then Navigation and Footer to edit their text and links.'],
+  'Typography controls': ['Change fonts and text style', 'In Design, choose a page part and set its font, size, weight, alignment and color.'],
+  'Background gradients': ['Change background and spacing', 'Choose Original, Solid or Gradient; set colors and spacing, then check smaller previews.'],
+  'Cover slideshow': ['Open the cover controls', 'In Media, select the photos and videos that should rotate on the homepage.'],
+  'Upload a photo': ['Upload a photo', 'Choose a supported image up to 50 MB. It appears in the library immediately.'],
+  'Select logo, favicon and palette': ['Set logo and brand colors', 'Select the uploaded image for logo or favicon in Content > Brand, then choose colors.'],
+  'Upload a video': ['Upload a video', 'Use the same Media upload control for a supported video up to 50 MB.'],
+  'Order and remove': ['Arrange cover slides', 'Use the arrows to reorder. Remove takes a slide out of rotation but keeps its file.'],
+  'Manage sections': ['Edit homepage sections', 'Change each section heading, description, order and visibility.'],
+  'Section preview': ['Save a private page draft', 'Click Save draft to refresh the page preview without changing the public site.'],
+  'Publish page changes': ['Publish the page', 'Check the preview, then click Publish changes and verify the public homepage.'],
+  'Restore and discard': ['Undo page changes', 'Use Restore previous publication or Discard draft in Versions & administration.'],
+  'Records overview': ['Manage records', 'Open Records for News, Achievements or Officers. Record saves take effect immediately.'],
+  'Create a News item': ['Create a News story', 'Enter title, slug, summary, content, status, date and optional media, then save.'],
+  'Clear validation': ['Fix a form error', 'Read the message, correct the marked field, then save again.'],
+  'Three-photo limit': ['Check media limits', 'Use at most 3 photos and 1 video per record, including the cover or portrait.'],
+  'Save and verify News': ['Verify the saved story', 'Reopen the record and use Preview to check its text and media.'],
+  'Delete a photo': ['Delete a record photo or video', 'Click the individual file button in the saved record and confirm deletion.'],
+  'Private preview and delete': ['Edit, preview or delete News', 'Use Edit to update, Preview to inspect, or Delete to remove the whole story.'],
+  'Achievements': ['Manage an Achievement', 'Use the story form, add Achievement date, save a draft, then publish when ready.'],
+  'Officer profiles': ['Manage an Officer', 'Enter identity, position, term, biography and media; save and reopen the profile.'],
+  'Delete a video': ['Delete a library video', 'In Media library, select Delete video on the exact file and confirm.'],
+  'Finish safely': ['Log out', 'Check the public result, then open Versions & administration and click Log out.'],
+};
 
 (async () => {
   const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
@@ -48,6 +77,12 @@ let chapter = 0;
   page.on('dialog', dialog => dialog.accept());
   const wait = ms => page.waitForTimeout(process.env.D23_GUIDE_FAST ? Math.min(150, ms) : ms);
   async function caption(title, body, ms = 2400) {
+    if (processVideo) {
+      const process = processChapters[title];
+      if (!process) return;
+      [title, body] = process;
+      ms = 1800;
+    }
     chapter++;
     const label = String(chapter).padStart(2, '0');
     transcript.push(`${label}. ${title}\n${body}\n`);
@@ -445,7 +480,7 @@ let chapter = 0;
     await caption('Guide complete', 'The new editor manages the page and content in one place. These examples changed only a disposable local guide database.');
     await shot('29-finish');
 
-    fs.writeFileSync(transcriptFile, 'D23 VISUAL EDITOR - CURRENT ADMIN VIDEO GUIDE\n\nRecorded on a disposable local database. No production data or accounts were used.\n\n' + transcript.join('\n'), 'utf8');
+    fs.writeFileSync(transcriptFile, (processVideo ? 'D23 VISUAL EDITOR - PROCESS VIDEO GUIDE' : 'D23 VISUAL EDITOR - CURRENT ADMIN VIDEO GUIDE') + '\n\nRecorded on a disposable local database. No production data or accounts were used.\n\n' + transcript.join('\n'), 'utf8');
     console.log(JSON.stringify({ chapters: chapter, frames: fs.readdirSync(frames).length, errors }));
   } catch (error) {
     console.error('Guide recording failed:', error);
