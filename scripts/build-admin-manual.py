@@ -62,7 +62,7 @@ WORKFLOWS = [
     ("11-photo-upload", "Upload a photo or video", [
         "Open Media and click + Upload photos or videos.",
         "Select JPG, PNG, WebP or GIF photos, or MP4, WebM or OGG videos.",
-        "Keep each file at or below 50 MB. If an upload fails, use a supported smaller file.",
+        "Keep each photo at or below 10 MB and each video at or below 50 MB. If an upload fails, use a supported smaller file.",
         "After upload, find the file in Media library and click + Add slide to use it on the homepage cover.",
         "Save draft and publish to show the new cover slide publicly.",
     ]),
@@ -116,7 +116,7 @@ WORKFLOWS = [
     ("19b-photo-limit", "Fix upload and form errors", [
         "Read the message beside the form or upload control.",
         "Keep each record within 3 photos and 1 video total; the cover or portrait counts toward the limit.",
-        "Keep each file at or below 50 MB. Remove an extra file or choose a smaller supported file.",
+        "Keep each photo at or below 10 MB and each video at or below 50 MB. Remove an extra file or choose a smaller supported file.",
         "Correct invalid slugs, email addresses or URLs in their fields.",
         "Click Save again and confirm the success message.",
     ]),

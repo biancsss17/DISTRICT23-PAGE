@@ -37,7 +37,7 @@ There is no public registration, default production password or pretend password
 - Media tab manages homepage cover slides and the shared media library. Uploaded files can be permanently deleted there or from their content records. Delete clears references across the site.
 - Records tab shows published counts, recent edits and management for News, Achievements and Officers. Create, edit, private preview and delete are available there. Activities remain removed from the public site and editor.
 - News and Achievements retain draft/publish, scheduled publication, featured flag, unique slugs and numeric ordering. A published item appears publicly only after its publication time.
-- Content and officers allow up to 3 photos and 1 video per item, counting the cover or portrait; new gallery uploads replace the current gallery. Maximum file size is 50 MB.
+- Content and officers allow up to 3 photos and 1 video per item, counting the cover or portrait; new gallery uploads replace the current gallery. Photos may be up to 10 MB each and videos up to 50 MB.
 - Page settings are saved as a private draft and become public only after Publish changes. Record changes and media deletion apply immediately. Versions & administration contains previous-publication restore, draft discard and logout. Passwords are managed outside the editor by an authorized site administrator.
 - Existing content tables and media records are shared by the public site and editor. Do not drop them when removing legacy admin code.
 - Text content is escaped; arbitrary HTML/JavaScript is never executed.

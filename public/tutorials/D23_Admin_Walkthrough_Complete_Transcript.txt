@@ -24,7 +24,7 @@ Choose Original, Solid or Gradient; set colors and spacing, then check smaller p
 In Media, select the photos and videos that should rotate on the homepage.
 
 08. Upload a photo
-Choose a supported image up to 50 MB. It appears in the library immediately.
+Choose a supported image up to 10 MB. It appears in the library immediately.
 
 09. Set logo and brand colors
 Select the uploaded image for logo or favicon in Content > Brand, then choose colors.
@@ -32,50 +32,53 @@ Select the uploaded image for logo or favicon in Content > Brand, then choose co
 10. Upload a video
 Use the same Media upload control for a supported video up to 50 MB.
 
-11. Arrange cover slides
+11. Photo size limit
+Photos over 10 MB are rejected. Videos may be up to 50 MB.
+
+12. Arrange cover slides
 Use the arrows to reorder. Remove takes a slide out of rotation but keeps its file.
 
-12. Edit homepage sections
+13. Edit homepage sections
 Change each section heading, description, order and visibility.
 
-13. Save a private page draft
+14. Save a private page draft
 Click Save draft to refresh the page preview without changing the public site.
 
-14. Publish the page
+15. Publish the page
 Check the preview, then click Publish changes and verify the public homepage.
 
-15. Undo page changes
+16. Undo page changes
 Use Restore previous publication or Discard draft in Versions & administration.
 
-16. Manage records
+17. Manage records
 Open Records for News, Achievements or Officers. Record saves take effect immediately.
 
-17. Create a News story
+18. Create a News story
 Enter title, slug, summary, content, status, date and optional media, then save.
 
-18. Fix a form error
+19. Fix a form error
 Read the message, correct the marked field, then save again.
 
-19. Check media limits
+20. Check media limits
 Use at most 3 photos and 1 video per record, including the cover or portrait.
 
-20. Verify the saved story
+21. Verify the saved story
 Reopen the record and use Preview to check its text and media.
 
-21. Delete a record photo or video
+22. Delete a record photo or video
 Click the individual file button in the saved record and confirm deletion.
 
-22. Edit, preview or delete News
+23. Edit, preview or delete News
 Use Edit to update, Preview to inspect, or Delete to remove the whole story.
 
-23. Manage an Achievement
+24. Manage an Achievement
 Use the story form, add Achievement date, save a draft, then publish when ready.
 
-24. Manage an Officer
+25. Manage an Officer
 Enter identity, position, term, biography and media; save and reopen the profile.
 
-25. Delete a library video
+26. Delete a library video
 In Media library, select Delete video on the exact file and confirm.
 
-26. Log out
+27. Log out
 Check the public result, then open Versions & administration and click Log out.

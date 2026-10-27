@@ -26,6 +26,6 @@ Neon uses path-style bucket URLs. The application sets `use_path_style_endpoint=
 
 ## Upload limits
 
-The app accepts up to 3 photos and 1 video per News, Achievement or Officer item, counting its cover or portrait, with a 50 MB maximum per file. The PHP upload settings in `php-conf/50-media-upload-limits.ini` support those uploads on Railway. Activities remain removed.
+The app accepts up to 3 photos and 1 video per News, Achievement or Officer item, counting its cover or portrait. Each photo may be up to 10 MB and each video up to 50 MB. The same size limits apply to homepage media uploads. The PHP upload settings in `php-conf/50-media-upload-limits.ini` support those uploads on Railway. Activities remain removed.
 
 Neon's Free plan has a storage allowance; monitor usage in Neon so uploads do not hit the limit. Keep the project on the Free plan if you do not want paid usage.

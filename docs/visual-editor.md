@@ -9,7 +9,7 @@ preview. No separate screenshot representation is used.
 - Click supported page text to select its field in Content.
 - Use Design for system-font families, responsive sizes, weight, alignment,
   colors, a continuous solid/gradient background and section spacing.
-- Use Media to upload a photo/video (50 MB per file), select up to 20 cover
+- Use Media to upload a photo (up to 10 MB) or video (up to 50 MB), select up to 20 cover
   slides, remove a slide from the rotation and reorder slides.
 - Use Sections to edit headings, descriptions, visibility and order.
 - Save draft refreshes the complete preview, including links, media and sections.

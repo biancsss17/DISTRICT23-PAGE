@@ -181,7 +181,7 @@
         side.append(selectField('Status','status',record.status,[['draft','Draft'],['published','Published']]));
         side.append(field('Sort order','sort_order',record.sort_order ?? 0,'number',{required:true,min:0}));
         side.append(field('Additional photos and video','gallery_uploads[]','','file',{accept:'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/ogg',multiple:true}));
-        side.append(element('p','record-hint','Maximum 3 photos and 1 video total per item, including its cover or portrait. Maximum 50 MB per file. New gallery uploads replace the current gallery.'));
+        side.append(element('p','record-hint','Maximum 3 photos and 1 video total per item, including its cover or portrait. 10 MB per photo and 50 MB per video. New gallery uploads replace the current gallery.'));
         if (record.cover) side.append(mediaItems([record.cover],type === 'officers' ? 'Portrait' : 'Cover'));
         if (record.gallery?.length) side.append(mediaItems(record.gallery,'Gallery'));
         grid.append(main,side);

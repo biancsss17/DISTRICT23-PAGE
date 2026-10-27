@@ -95,6 +95,31 @@ class PageEditorTest extends TestCase
         $this->postJson('/admin/editor/media',['file'=>\Illuminate\Http\UploadedFile::fake()->create('huge.mp4',51201,'video/mp4')])->assertUnprocessable();
     }
 
+    public function test_media_upload_uses_10_mb_for_photos_and_50_mb_for_videos(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        config(['media.disk' => 'public']);
+        $this->actingAs($this->administrator());
+
+        $this->postJson('/admin/editor/media', [
+            'file' => \Illuminate\Http\UploadedFile::fake()->create('within-limit.jpg', 10240, 'image/jpeg'),
+        ])->assertOk();
+
+        $this->postJson('/admin/editor/media', [
+            'file' => \Illuminate\Http\UploadedFile::fake()->create('large.jpg', 10241, 'image/jpeg'),
+        ])->assertUnprocessable()->assertJsonValidationErrors('file')
+            ->assertSee('Photos must be 10 MB or smaller.');
+
+        $this->postJson('/admin/editor/media', [
+            'file' => \Illuminate\Http\UploadedFile::fake()->create('video.mp4', 25601, 'video/mp4'),
+        ])->assertOk();
+
+        $this->postJson('/admin/editor/media', [
+            'file' => \Illuminate\Http\UploadedFile::fake()->create('large.mp4', 51201, 'video/mp4'),
+        ])->assertUnprocessable()->assertJsonValidationErrors('file')
+            ->assertSee('Videos must be 50 MB or smaller.');
+    }
+
     public function test_neon_upload_is_served_and_deleted_from_its_recorded_disk(): void
     {
         \Illuminate\Support\Facades\Storage::fake('neon');

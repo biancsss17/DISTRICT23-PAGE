@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\{SiteSetting, PageSection, HeroSlide, Media, Content, Officer};
 use App\Services\{PageEditor, MediaStorage};
+use App\Rules\MediaUploadSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -122,7 +123,7 @@ class PageEditorController extends Controller
 
     public function upload(Request $request)
     {
-        $request->validate(['file'=>'required|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200']);
+        $request->validate(['file'=>['required', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg', new MediaUploadSize]]);
         $file=$request->file('file');
         $m=app(MediaStorage::class)->store($file,$file->getClientOriginalName());
         return response()->json(['id'=>$m->id,'name'=>$m->name,'url'=>$m->url,'video'=>$m->is_video]);

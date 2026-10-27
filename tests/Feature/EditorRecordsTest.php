@@ -103,6 +103,19 @@ class EditorRecordsTest extends TestCase
             'title' => 'Large file', 'slug' => 'large-file', 'content' => 'Body',
             'status' => 'draft', 'sort_order' => 0, 'gallery_uploads' => [$file],
         ])->assertUnprocessable();
+
+        $this->postJson($path, [
+            'title' => 'Large photo', 'slug' => 'large-photo', 'content' => 'Body',
+            'status' => 'draft', 'sort_order' => 0,
+            'gallery_uploads' => [UploadedFile::fake()->create('large.jpg', 10241, 'image/jpeg')],
+        ])->assertUnprocessable()->assertJsonValidationErrors('gallery_uploads.0')
+            ->assertSee('Photos must be 10 MB or smaller.');
+
+        $this->postJson('/admin/editor/records/officers', [
+            'name' => 'Large portrait', 'position' => 'Coordinator',
+            'status' => 'draft', 'sort_order' => 0,
+            'photo_upload' => UploadedFile::fake()->create('portrait.jpg', 10241, 'image/jpeg'),
+        ])->assertUnprocessable()->assertJsonValidationErrors('photo_upload');
     }
 
     public function test_media_deletion_clears_shared_references(): void

@@ -6,6 +6,7 @@ use App\Models\Content;
 use App\Models\Media;
 use App\Models\Officer;
 use App\Models\SiteSetting;
+use App\Rules\MediaUploadSize;
 use App\Services\MediaStorage;
 use App\Services\PageEditor;
 use Illuminate\Http\Request;
@@ -91,9 +92,9 @@ class EditorRecordsController extends Controller
             'category' => 'nullable|string|max:80', 'published_at' => 'nullable|date|required_if:status,published',
             'event_date' => 'nullable|date', 'status' => 'required|in:draft,published',
             'featured' => 'nullable|boolean', 'sort_order' => 'required|integer|min:0|max:10000',
-            'cover_upload' => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200',
+            'cover_upload' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg', new MediaUploadSize],
             'gallery_uploads' => 'nullable|array|max:4',
-            'gallery_uploads.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200',
+            'gallery_uploads.*' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg', new MediaUploadSize],
         ]);
         $galleryFiles = $request->file('gallery_uploads', []);
         $kinds = collect($galleryFiles)->map(fn ($file) => $this->kind($file->getClientOriginalExtension()))
@@ -141,9 +142,9 @@ class EditorRecordsController extends Controller
             'term' => 'nullable|string|max:160', 'biography' => 'nullable|string|max:10000',
             'email' => 'nullable|email|max:255', 'social_url' => 'nullable|url:http,https|max:255',
             'sort_order' => 'required|integer|min:0|max:10000', 'status' => 'required|in:draft,published',
-            'photo_upload' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:51200',
+            'photo_upload' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', new MediaUploadSize],
             'gallery_uploads' => 'nullable|array|max:4',
-            'gallery_uploads.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg|max:51200',
+            'gallery_uploads.*' => ['required', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,ogg', new MediaUploadSize],
         ]);
         $galleryFiles = $request->file('gallery_uploads', []);
         $kinds = collect($galleryFiles)->map(fn ($file) => $this->kind($file->getClientOriginalExtension()))

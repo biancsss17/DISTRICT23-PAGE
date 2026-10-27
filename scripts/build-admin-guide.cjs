@@ -24,7 +24,8 @@ const processChapters = {
   'Typography controls': ['Change fonts and text style', 'In Design, choose a page part and set its font, size, weight, alignment and color.'],
   'Background gradients': ['Change background and spacing', 'Choose Original, Solid or Gradient; set colors and spacing, then check smaller previews.'],
   'Cover slideshow': ['Open the cover controls', 'In Media, select the photos and videos that should rotate on the homepage.'],
-  'Upload a photo': ['Upload a photo', 'Choose a supported image up to 50 MB. It appears in the library immediately.'],
+  'Upload a photo': ['Upload a photo', 'Choose a supported image up to 10 MB. It appears in the library immediately.'],
+  '10 MB photo validation': ['Photo size limit', 'Photos over 10 MB are rejected. Videos may be up to 50 MB.'],
   'Select logo, favicon and palette': ['Set logo and brand colors', 'Select the uploaded image for logo or favicon in Content > Brand, then choose colors.'],
   'Upload a video': ['Upload a video', 'Use the same Media upload control for a supported video up to 50 MB.'],
   'Order and remove': ['Arrange cover slides', 'Use the arrows to reorder. Remove takes a slide out of rotation but keeps its file.'],
@@ -237,7 +238,7 @@ const processChapters = {
     const photo = path.join(root, 'public', 'images', 'landscape.jpg');
     await page.locator('#media-upload').setInputFiles(photo);
     await page.waitForFunction(() => document.querySelector('#editor-status')?.textContent?.includes('Uploaded.'), null, { timeout: 30000 });
-    await caption('Upload a photo', 'Each file may be up to 50 MB. Upload adds it to the library immediately; publish controls homepage use.');
+    await caption('Upload a photo', 'Photos may be up to 10 MB. Upload adds the file to the library immediately; publish controls homepage use.');
     await shot('11-photo-upload');
     await tab('content');
     await group('brand');
@@ -261,11 +262,11 @@ const processChapters = {
     await shot('12-video-upload');
     const oversized = path.join(out, 'too-large.png');
     const oversizedHandle = fs.openSync(oversized, 'w');
-    fs.ftruncateSync(oversizedHandle, 50 * 1024 * 1024 + 1);
+    fs.ftruncateSync(oversizedHandle, 10 * 1024 * 1024 + 1);
     fs.closeSync(oversizedHandle);
     await page.locator('#media-upload').setInputFiles(oversized);
-    await page.waitForFunction(() => document.querySelector('#editor-status')?.textContent?.includes('50 MB'));
-    await caption('50 MB upload validation', 'A file over 50 MB is rejected before upload. Choose a smaller photo or video and try again.');
+    await page.waitForFunction(() => document.querySelector('#editor-status')?.textContent?.includes('10 MB'));
+    await caption('10 MB photo validation', 'A photo over 10 MB is rejected before upload. Choose a smaller photo and try again.');
     await shot('12a-file-limit');
     await page.locator('#selected-slides .media-tile').first().getByRole('button', { name: 'Move slide later' }).click();
     await caption('Order and remove', 'Use the arrows to reorder slides. Remove changes the draft selection without deleting the file.');
