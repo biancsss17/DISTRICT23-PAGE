@@ -60,15 +60,14 @@ return [
             'report' => false,
         ],
 
-        'r2' => [
+        'neon' => [
             'driver' => 's3',
-            'key' => env('R2_ACCESS_KEY_ID'),
-            'secret' => env('R2_SECRET_ACCESS_KEY'),
-            'region' => 'auto',
-            'bucket' => env('R2_BUCKET'),
-            'endpoint' => env('R2_ENDPOINT'),
-            'url' => env('R2_PUBLIC_URL'),
-            'use_path_style_endpoint' => false,
+            'key' => env('NEON_STORAGE_ACCESS_KEY_ID'),
+            'secret' => env('NEON_STORAGE_SECRET_ACCESS_KEY'),
+            'region' => env('NEON_STORAGE_REGION'),
+            'bucket' => env('NEON_STORAGE_BUCKET'),
+            'endpoint' => env('NEON_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
             'throw' => true,
             'report' => false,
         ],

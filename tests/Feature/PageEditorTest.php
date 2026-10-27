@@ -95,37 +95,38 @@ class PageEditorTest extends TestCase
         $this->postJson('/admin/editor/media',['file'=>\Illuminate\Http\UploadedFile::fake()->create('huge.mp4',51201,'video/mp4')])->assertUnprocessable();
     }
 
-    public function test_r2_upload_is_served_and_deleted_from_its_recorded_disk(): void
+    public function test_neon_upload_is_served_and_deleted_from_its_recorded_disk(): void
     {
-        \Illuminate\Support\Facades\Storage::fake('r2');
-        config(['media.disk' => 'r2']);
+        \Illuminate\Support\Facades\Storage::fake('neon');
+        config(['media.disk' => 'neon']);
         $this->actingAs($this->administrator());
 
-        $image = \Illuminate\Http\UploadedFile::fake()->createWithContent('r2-cover.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='));
+        $image = \Illuminate\Http\UploadedFile::fake()->createWithContent('neon-cover.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='));
         $response = $this->postJson('/admin/editor/media', ['file' => $image])->assertOk();
         $media = Media::findOrFail($response->json('id'));
 
-        $this->assertSame('r2', $media->storage_disk);
-        \Illuminate\Support\Facades\Storage::disk('r2')->assertExists($media->path);
+        $this->assertSame('neon', $media->storage_disk);
+        \Illuminate\Support\Facades\Storage::disk('neon')->assertExists($media->path);
         $this->get('/media/'.$media->id)->assertOk();
 
         $this->deleteJson('/admin/editor/media/'.$media->id)->assertOk();
         $this->assertDatabaseMissing('media', ['id' => $media->id]);
-        \Illuminate\Support\Facades\Storage::disk('r2')->assertMissing($media->path);
+        \Illuminate\Support\Facades\Storage::disk('neon')->assertMissing($media->path);
     }
 
-    public function test_r2_connection_check_cleans_up_its_probe(): void
+    public function test_neon_connection_check_cleans_up_its_probe(): void
     {
-        \Illuminate\Support\Facades\Storage::fake('r2');
+        \Illuminate\Support\Facades\Storage::fake('neon');
         config([
-            'filesystems.disks.r2.key' => 'test-key',
-            'filesystems.disks.r2.secret' => 'test-secret',
-            'filesystems.disks.r2.bucket' => 'test-bucket',
-            'filesystems.disks.r2.endpoint' => 'https://example.invalid',
+            'filesystems.disks.neon.key' => 'test-key',
+            'filesystems.disks.neon.secret' => 'test-secret',
+            'filesystems.disks.neon.region' => 'us-east-2',
+            'filesystems.disks.neon.bucket' => 'test-bucket',
+            'filesystems.disks.neon.endpoint' => 'https://example.invalid',
         ]);
 
-        $this->assertSame(0, \Illuminate\Support\Facades\Artisan::call('media:check-r2'));
-        $this->assertSame([], \Illuminate\Support\Facades\Storage::disk('r2')->allFiles('cms'));
+        $this->assertSame(0, \Illuminate\Support\Facades\Artisan::call('media:check-neon'));
+        $this->assertSame([], \Illuminate\Support\Facades\Storage::disk('neon')->allFiles('cms'));
     }
 
     public function test_css_is_bounded_and_does_not_accept_markup(): void
