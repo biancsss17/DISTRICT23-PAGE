@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{User,SiteSetting};
+use App\Models\{Media,User,SiteSetting};
 use App\Services\PageEditor;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -93,6 +93,39 @@ class PageEditorTest extends TestCase
         $this->assertEquals($before,PageEditor::current()['slides']);
         $this->postJson('/admin/editor/media',['file'=>\Illuminate\Http\UploadedFile::fake()->create('bad.txt',1,'text/plain')])->assertUnprocessable();
         $this->postJson('/admin/editor/media',['file'=>\Illuminate\Http\UploadedFile::fake()->create('huge.mp4',51201,'video/mp4')])->assertUnprocessable();
+    }
+
+    public function test_r2_upload_is_served_and_deleted_from_its_recorded_disk(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('r2');
+        config(['media.disk' => 'r2']);
+        $this->actingAs($this->administrator());
+
+        $image = \Illuminate\Http\UploadedFile::fake()->createWithContent('r2-cover.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='));
+        $response = $this->postJson('/admin/editor/media', ['file' => $image])->assertOk();
+        $media = Media::findOrFail($response->json('id'));
+
+        $this->assertSame('r2', $media->storage_disk);
+        \Illuminate\Support\Facades\Storage::disk('r2')->assertExists($media->path);
+        $this->get('/media/'.$media->id)->assertOk();
+
+        $this->deleteJson('/admin/editor/media/'.$media->id)->assertOk();
+        $this->assertDatabaseMissing('media', ['id' => $media->id]);
+        \Illuminate\Support\Facades\Storage::disk('r2')->assertMissing($media->path);
+    }
+
+    public function test_r2_connection_check_cleans_up_its_probe(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('r2');
+        config([
+            'filesystems.disks.r2.key' => 'test-key',
+            'filesystems.disks.r2.secret' => 'test-secret',
+            'filesystems.disks.r2.bucket' => 'test-bucket',
+            'filesystems.disks.r2.endpoint' => 'https://example.invalid',
+        ]);
+
+        $this->assertSame(0, \Illuminate\Support\Facades\Artisan::call('media:check-r2'));
+        $this->assertSame([], \Illuminate\Support\Facades\Storage::disk('r2')->allFiles('cms'));
     }
 
     public function test_css_is_bounded_and_does_not_accept_markup(): void

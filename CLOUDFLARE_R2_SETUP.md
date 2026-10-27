@@ -11,17 +11,18 @@ New uploads use `CMS_MEDIA_DISK`. It defaults to `public` so current local and l
 
 ## 2. Add Railway variables
 
-In the Railway service's **Variables**, add:
+In the Railway service's **Variables**, first add:
 
 ```text
-CMS_MEDIA_DISK=r2
 R2_ACCESS_KEY_ID=<Cloudflare Access Key ID>
 R2_SECRET_ACCESS_KEY=<Cloudflare Secret Access Key>
 R2_BUCKET=<bucket name>
 R2_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 ```
 
-`R2_PUBLIC_URL` is optional and normally should be left unset; media is proxied through the application. Railway redeploys after variables change. The included deploy migration adds the media disk field and officer gallery table. Keep the Railway volume attached for existing files and backups.
+Deploy those variables while leaving `CMS_MEDIA_DISK` set to `public` (or unset). From a local checkout linked to this Railway service, run `railway run php artisan media:check-r2`. The check creates, reads and deletes one small temporary object in the configured bucket and prints no credentials. If it passes, set `CMS_MEDIA_DISK=r2` in the same service and deploy the variable change. Upload a sample photo and video from the admin editor, verify both public media URLs, then delete those samples.
+
+`R2_PUBLIC_URL` is optional and normally should be left unset; media is proxied through the application. The included deploy migration adds the media disk field and officer gallery table. Keep the Railway volume attached for existing files and backups. Existing media is not moved by this switch.
 
 ## 3. Local setup (optional)
 

@@ -212,8 +212,9 @@ class EditorRecordsController extends Controller
                 PageEditor::write('visual_draft', $draft);
             }
             $media->delete();
+            // Keep database references when the storage provider rejects deletion.
+            app(MediaStorage::class)->delete($media);
         });
-        app(MediaStorage::class)->delete($media);
         return response()->json(['message' => $media->is_video ? 'Video deleted.' : 'Photo deleted.']);
     }
 
