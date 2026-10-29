@@ -202,6 +202,50 @@ def draw_steps(pdf, steps, x, top, width):
         raise RuntimeError("Steps overflow the page")
 
 
+def draw_contents(pdf, workflows, width, height, navy, gold, pale):
+    pdf.setFillColor(pale)
+    pdf.rect(0, 0, width, height, fill=1, stroke=0)
+    pdf.setFillColor(navy)
+    pdf.rect(0, height - 104, width, 104, fill=1, stroke=0)
+    pdf.setFillColor(gold)
+    pdf.setFont("GuideBold", 11)
+    pdf.drawString(46, height - 31, "UECFI / DISTRICT 23 FYS")
+    pdf.setFillColor(colors.white)
+    pdf.setFont("GuideBold", 30)
+    pdf.drawString(46, height - 76, "Contents")
+    pdf.setFillColor(colors.HexColor("#183047"))
+    pdf.setFont("Guide", 11)
+    pdf.drawString(46, height - 137, "Follow the workflows in order, or open the section that matches the task you need.")
+
+    columns = [46, 510]
+    column_width = 420
+    split = (len(workflows) + 1) // 2
+    for column, entries in enumerate((workflows[:split], workflows[split:])):
+        y = height - 178
+        for offset, (_, title, _) in enumerate(entries):
+            number = offset + 1 + (0 if column == 0 else split)
+            page = number + 2
+            pdf.setFillColor(gold)
+            pdf.setFont("GuideBold", 11)
+            pdf.drawString(columns[column], y, f"{number:02d}")
+            pdf.setFillColor(colors.HexColor("#183047"))
+            pdf.setFont("Guide", 11)
+            pdf.drawString(columns[column] + 32, y, title)
+            pdf.setFillColor(colors.HexColor("#637487"))
+            pdf.setFont("Guide", 10)
+            pdf.drawRightString(columns[column] + column_width, y, str(page))
+            y -= 29
+    pdf.setFillColor(colors.HexColor("#637487"))
+    pdf.setFont("Guide", 9)
+    pdf.drawString(46, 52, "Technology and media guide: full stack, storage flow and upload-limit rationale")
+    pdf.linkURL(
+        "https://github.com/biancsss17/DISTRICT23-PAGE/blob/main/docs/technology-and-media.md",
+        (46, 48, 465, 62), relative=0,
+    )
+    pdf.drawString(46, 31, "D23 visual editor | Process manual")
+    pdf.drawRightString(978, 31, "2")
+
+
 def main():
     if len(sys.argv) != 3:
         raise SystemExit(__doc__)
@@ -251,6 +295,9 @@ def main():
     pdf.drawString(46, 42, "Each following page shows one complete workflow. Similar controls use the same steps.")
     pdf.showPage()
 
+    draw_contents(pdf, WORKFLOWS, width, height, navy, gold, pale)
+    pdf.showPage()
+
     for index, (frame, title, steps) in enumerate(WORKFLOWS, 1):
         pdf.setFillColor(pale)
         pdf.rect(0, 0, width, height, fill=1, stroke=0)
@@ -277,7 +324,7 @@ def main():
         pdf.setFillColor(colors.HexColor("#637487"))
         pdf.setFont("Guide", 9)
         pdf.drawString(30, 31, "D23 visual editor | Process manual")
-        pdf.drawRightString(978, 31, str(index + 1))
+        pdf.drawRightString(978, 31, str(index + 2))
         pdf.showPage()
 
     pdf.save()
