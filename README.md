@@ -2,6 +2,7 @@
 
 Laravel application for the UECFI District 23 public website and visual admin editor.
 See SETUP.md for installation, hosting, storage configuration and account management.
+See [docs/technology-and-media.md](docs/technology-and-media.md) for the complete technology map and the reasons behind the upload limits.
 
 ## Code map
 
