@@ -20,6 +20,7 @@ Artisan::command('media:check-neon', function () {
             'bucket' => 'NEON_STORAGE_BUCKET',
             'endpoint' => 'NEON_STORAGE_ENDPOINT',
         }, $missing)));
+
         return 1;
     }
 
@@ -28,21 +29,23 @@ Artisan::command('media:check-neon', function () {
     $contents = 'D23 Neon storage connection check';
     try {
         if (! $disk->put($path, $contents) || $disk->get($path) !== $contents) {
-            throw new \RuntimeException('Neon storage could not read back the test object.');
+            throw new RuntimeException('Neon storage could not read back the test object.');
         }
         if (! $disk->delete($path)) {
-            throw new \RuntimeException('Neon storage could not delete the test object.');
+            throw new RuntimeException('Neon storage could not delete the test object.');
         }
-    } catch (\Throwable) {
+    } catch (Throwable) {
         try {
             $disk->delete($path);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Leave the original check failure as the visible result.
         }
         $this->error('Neon storage write/read/delete check failed. Verify the bucket, branch endpoint, region and server-side credentials.');
+
         return 1;
     }
 
     $this->info('Neon storage write/read/delete check passed. New uploads can now use CMS_MEDIA_DISK=neon.');
+
     return 0;
 })->purpose('Check the Neon media bucket without changing the active upload disk');

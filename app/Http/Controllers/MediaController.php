@@ -18,5 +18,4 @@ class MediaController extends Controller
 
         return $disk->response($media->path, $media->name, ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'public, max-age=86400']);
     }
-
 }

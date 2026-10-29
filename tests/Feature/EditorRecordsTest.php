@@ -28,19 +28,23 @@ class EditorRecordsTest extends TestCase
         $user = User::factory()->create();
         $user->is_admin = true;
         $user->save();
+
         return $user;
     }
 
     public function test_public_pages_and_admin_access(): void
     {
-        foreach (['/', '/news', '/achievements', '/officers', '/admin/login'] as $path) $this->get($path)->assertOk();
+        foreach (['/', '/news', '/achievements', '/officers', '/admin/login'] as $path) {
+            $this->get($path)->assertOk();
+        }
         $this->get('/admin/editor/records/news')->assertRedirect('/admin/login');
         $this->actingAs(User::factory()->create())->get('/admin/editor/records/news')->assertForbidden();
         $this->actingAs($this->administrator())->get('/admin')->assertOk()->assertSee('Records')->assertSee('Manage Officers');
         $this->get('/admin')->assertDontSee('Change my password');
         $this->put('/admin/editor/password')->assertNotFound();
-        foreach (['/admin/content/news', '/admin/settings/home', '/admin/officers', '/admin/overview'] as $oldPath)
+        foreach (['/admin/content/news', '/admin/settings/home', '/admin/officers', '/admin/overview'] as $oldPath) {
             $this->get($oldPath)->assertNotFound();
+        }
     }
 
     public function test_news_and_achievement_records_are_managed_in_visual_editor(): void

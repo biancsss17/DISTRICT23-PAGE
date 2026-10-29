@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaRules;
 use Illuminate\Database\Eloquent\Model;
 
 class Media extends Model
@@ -24,6 +25,6 @@ class Media extends Model
 
     public function getIsVideoAttribute(): bool
     {
-        return in_array(strtolower(pathinfo($this->path, PATHINFO_EXTENSION)), ['mp4', 'webm', 'ogg'], true);
+        return MediaRules::isVideoExtension(pathinfo($this->path, PATHINFO_EXTENSION));
     }
 }

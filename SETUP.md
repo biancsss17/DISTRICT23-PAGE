@@ -7,7 +7,6 @@ Administrator: http://127.0.0.1:8005/admin/login
 
 The local installation uses SQLite so it works without a separate database server.
 The migrations support MySQL/MariaDB. The example environment retains MySQL placeholders.
-The original /generate POST endpoint remains available.
 
 Start from PowerShell:
 ```powershell

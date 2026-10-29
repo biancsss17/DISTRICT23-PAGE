@@ -1,58 +1,54 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# D23 website
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laravel application for the UECFI District 23 public website and visual admin editor.
+See SETUP.md for installation, hosting, storage configuration and account management.
 
-## About Laravel
+## Code map
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- `routes/web.php`: public pages and authenticated editor endpoints.
+- `PageEditorController`: editor and private preview; delegates draft operations.
+- `SavePageDraftRequest`: validation of page settings, section layout and design controls.
+- `PageDrafts`: saving, publishing, discarding and restoring page versions.
+- `EditorRecordsController`: News, Achievement and Officer records.
+- `EditorMediaController`: shared media upload and deletion endpoints.
+- `MediaStorage`: storage operations using each media record's disk.
+- `MediaRules` and `MediaUploadSize`: shared file types and size validation.
+- `resources/views/admin/editor/`: individual editor panels and record dialog.
+- `public/js/editor-api.js`: shared authenticated requests and upload prechecks.
+- `public/js/editor-styles.js`: preview style generation.
+- `public/js/page-editor.js`: page editor interactions.
+- `public/js/editor-records.js`: record forms and media controls.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+PHP classes are under `app/`; upload policy is in `config/media.php`.
+Current policy: 3 photos and 1 video per content item, 10 MB per photo and 50 MB per video.
+New uploads use the configured media disk; existing media keeps its recorded disk.
+Activities are intentionally removed. Historical migrations remain necessary for fresh installations.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Development
 
-## Learning Laravel
+Install the locked Composer dependencies, configure a local `.env`, and follow SETUP.md.
+Serve with `php artisan serve --host=127.0.0.1 --port=8005`.
+The application serves CSS and JavaScript directly from `public/`; there is no Node build step.
+Editor JavaScript uses browser ES modules, so include new modules in deployments.
+Never commit `.env`, credentials, database copies or uploaded user files.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Verification and formatting
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```sh
+php artisan test
+php vendor/bin/pint app config routes tests
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+JavaScript and CSS use Prettier 3.6.2 with `.prettierrc.json`.
+Blade templates use blade-formatter 1.44.6, four-space indentation and a 120-character wrap length.
+Formatting tools are development-only and do not need to be installed on the server.
 
-## Contributing
+`scripts/build-admin-guide.cjs` exercises the editor while recording its walkthrough.
+Run it only against an isolated local instance with a disposable database and local media disk;
+it intentionally creates, publishes and deletes demonstration records and files.
+It requires Playwright and Chrome; its runtime paths may need adjustment on another machine.
+`D23_GUIDE_BASE` sets the local URL and `D23_GUIDE_FAST=1` shortens demonstration pauses.
+Do not replace the published guide with a fast test recording.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The published guide assets live in `public/tutorials/`. The manual generator is
+`scripts/build-admin-manual.py`. Keep both guides aligned with user-visible workflow changes.
