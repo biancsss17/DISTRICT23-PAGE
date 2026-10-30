@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\Center;
 use App\Models\Media;
 use App\Models\Officer;
+use App\Models\Song;
 use App\Services\MediaStorage;
 use App\Support\MediaRules;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class EditorRecordsController extends Controller
 {
     private function checkType(string $type): void
     {
-        abort_unless(in_array($type, ['news', 'achievements', 'officers'], true), 404);
+        abort_unless(in_array($type, ['news', 'achievements', 'officers', 'songs', 'centers'], true), 404);
     }
 
     private function media(?Media $item): ?array
@@ -24,7 +26,7 @@ class EditorRecordsController extends Controller
         return $item ? ['id' => $item->id, 'name' => $item->name, 'url' => $item->url, 'video' => $item->is_video] : null;
     }
 
-    private function item(Content|Officer $record): array
+    private function item(Content|Officer|Song|Center $record): array
     {
         if ($record instanceof Officer) {
             $record->load(['photo', 'gallery']);
@@ -34,6 +36,23 @@ class EditorRecordsController extends Controller
                 'term' => $record->term, 'biography' => $record->biography, 'email' => $record->email,
                 'social_url' => $record->social_url, 'sort_order' => $record->sort_order, 'status' => $record->status,
                 'cover' => $this->media($record->photo), 'gallery' => $record->gallery->map(fn ($media) => $this->media($media))->all(),
+            ];
+        }
+        if ($record instanceof Song) {
+            return [
+                'id' => $record->id, 'title' => $record->title, 'slug' => $record->slug,
+                'category' => $record->category, 'lyrics' => $record->lyrics, 'video_url' => $record->video_url,
+                'published_at' => $record->published_at?->format('Y-m-d\\TH:i'), 'status' => $record->status,
+                'sort_order' => $record->sort_order,
+            ];
+        }
+        if ($record instanceof Center) {
+            return [
+                'id' => $record->id, 'name' => $record->name, 'slug' => $record->slug,
+                'description' => $record->description, 'address' => $record->address,
+                'latitude' => $record->latitude, 'longitude' => $record->longitude, 'map_url' => $record->map_url,
+                'published_at' => $record->published_at?->format('Y-m-d\\TH:i'), 'status' => $record->status,
+                'sort_order' => $record->sort_order,
             ];
         }
         $record->load(['cover', 'gallery']);
@@ -50,9 +69,12 @@ class EditorRecordsController extends Controller
     public function index(string $type)
     {
         $this->checkType($type);
-        $records = $type === 'officers'
-            ? Officer::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'position', 'status', 'sort_order'])
-            : Content::where('type', $type)->orderBy('sort_order')->latest('updated_at')->get(['id', 'title', 'status', 'sort_order', 'featured']);
+        $records = match ($type) {
+            'officers' => Officer::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'position', 'status', 'sort_order']),
+            'songs' => Song::orderBy('sort_order')->latest('updated_at')->get(['id', 'title', 'status', 'sort_order']),
+            'centers' => Center::orderBy('sort_order')->orderBy('name')->get(['id', 'name', 'status', 'sort_order']),
+            default => Content::where('type', $type)->orderBy('sort_order')->latest('updated_at')->get(['id', 'title', 'status', 'sort_order', 'featured']),
+        };
 
         return response()->json(['records' => $records]);
     }
@@ -60,7 +82,12 @@ class EditorRecordsController extends Controller
     public function show(string $type, int $id)
     {
         $this->checkType($type);
-        $record = $type === 'officers' ? Officer::findOrFail($id) : Content::where('type', $type)->findOrFail($id);
+        $record = match ($type) {
+            'officers' => Officer::findOrFail($id),
+            'songs' => Song::findOrFail($id),
+            'centers' => Center::findOrFail($id),
+            default => Content::where('type', $type)->findOrFail($id),
+        };
 
         return response()->json(['record' => $this->item($record)]);
     }
@@ -82,6 +109,16 @@ class EditorRecordsController extends Controller
             $record = $id ? Officer::findOrFail($id) : new Officer;
 
             return $this->saveOfficer($request, $record);
+        }
+        if ($type === 'songs') {
+            $record = $id ? Song::findOrFail($id) : new Song;
+
+            return $this->saveSong($request, $record);
+        }
+        if ($type === 'centers') {
+            $record = $id ? Center::findOrFail($id) : new Center;
+
+            return $this->saveCenter($request, $record);
         }
         $record = $id ? Content::where('type', $type)->findOrFail($id) : new Content;
 
@@ -198,6 +235,43 @@ class EditorRecordsController extends Controller
         return response()->json(['message' => 'Officer saved.', 'record' => $this->item($record)]);
     }
 
+    private function saveSong(Request $request, Song $record)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:180',
+            'slug' => ['required', 'alpha_dash', 'max:180', Rule::unique('songs')->ignore($record->id)],
+            'category' => 'nullable|string|max:80', 'lyrics' => 'required|string|max:100000',
+            'video_url' => 'nullable|url:http,https|max:500',
+            'published_at' => 'nullable|date|required_if:status,published',
+            'status' => 'required|in:draft,published', 'sort_order' => 'required|integer|min:0|max:10000',
+        ]);
+        if (! $record->exists) {
+            $data['created_by'] = $request->user()->id;
+        }
+        $record->fill($data)->save();
+
+        return response()->json(['message' => 'Song saved.', 'record' => $this->item($record)]);
+    }
+
+    private function saveCenter(Request $request, Center $record)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:180',
+            'slug' => ['required', 'alpha_dash', 'max:180', Rule::unique('centers')->ignore($record->id)],
+            'description' => 'nullable|string|max:1000', 'address' => 'required|string|max:500',
+            'latitude' => 'nullable|numeric|between:-90,90', 'longitude' => 'nullable|numeric|between:-180,180',
+            'map_url' => 'nullable|url:http,https|max:500',
+            'published_at' => 'nullable|date|required_if:status,published',
+            'status' => 'required|in:draft,published', 'sort_order' => 'required|integer|min:0|max:10000',
+        ]);
+        if (! $record->exists) {
+            $data['created_by'] = $request->user()->id;
+        }
+        $record->fill($data)->save();
+
+        return response()->json(['message' => 'Center saved.', 'record' => $this->item($record)]);
+    }
+
     private function kind(string $extension): string
     {
         return MediaRules::isVideoExtension($extension) ? 'video' : 'photo';
@@ -216,7 +290,10 @@ class EditorRecordsController extends Controller
     public function destroy(string $type, int $id)
     {
         $this->checkType($type);
-        $record = $type === 'officers' ? Officer::findOrFail($id) : Content::where('type', $type)->findOrFail($id);
+        $record = match ($type) {
+            'officers' => Officer::findOrFail($id), 'songs' => Song::findOrFail($id),
+            'centers' => Center::findOrFail($id), default => Content::where('type', $type)->findOrFail($id),
+        };
         $record->delete();
 
         return response()->json(['message' => 'Record deleted.']);

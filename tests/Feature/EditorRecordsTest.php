@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Content;
+use App\Models\Center;
 use App\Models\HeroSlide;
 use App\Models\Media;
 use App\Models\Officer;
+use App\Models\Song;
 use App\Models\User;
 use Database\Seeders\CmsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -89,6 +91,26 @@ class EditorRecordsTest extends TestCase
         $this->assertSame('2027-2029', Officer::findOrFail($id)->term);
         $this->deleteJson($path.'/'.$id)->assertOk();
         $this->assertDatabaseMissing('officers', ['id' => $id]);
+    }
+
+    public function test_songs_and_centers_are_public_and_editable(): void
+    {
+        $this->actingAs($this->administrator());
+        $song = $this->postJson('/admin/editor/records/songs', [
+            'title' => 'Test worship song', 'slug' => 'test-worship-song', 'lyrics' => "Verse one\nChorus",
+            'video_url' => 'https://youtu.be/abc1234', 'status' => 'published',
+            'published_at' => now()->subMinute()->format('Y-m-d H:i:s'), 'sort_order' => 0,
+        ])->assertOk()->json('record.id');
+        $this->get('/songs')->assertOk()->assertSee('Test worship song')->assertSee('Verse one');
+        $this->assertSame('https://www.youtube.com/embed/abc1234?rel=0', Song::findOrFail($song)->video_embed_url);
+
+        $center = $this->postJson('/admin/editor/records/centers', [
+            'name' => 'Centro Ubbog ni Ayat', 'slug' => 'centro-ubbog-ni-ayat',
+            'address' => 'Test address', 'latitude' => 16.1234567, 'longitude' => 120.1234567,
+            'status' => 'published', 'published_at' => now()->subMinute()->format('Y-m-d H:i:s'), 'sort_order' => 0,
+        ])->assertOk()->json('record.id');
+        $this->get('/map')->assertOk()->assertSee('Centro Ubbog ni Ayat')->assertSee('openstreetmap.org');
+        $this->assertNotNull(Center::findOrFail($center)->map_embed_url);
     }
 
     public function test_validation_and_media_limits_remain_enforced(): void

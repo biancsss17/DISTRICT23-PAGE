@@ -108,9 +108,9 @@
         <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav"
             aria-label="Open navigation">☰</button>
         <nav id="main-nav" aria-label="Main navigation">
-            @foreach (['home' => '/#top', 'news' => '/#news', 'achievements' => '/#achievements', 'officers' => '/#officers', 'admin' => '/admin/login'] as $key => $url)
+            @foreach (['home' => '/#top', 'news' => '/#news', 'achievements' => '/#achievements', 'officers' => '/#officers', 'songs' => '/songs', 'map' => '/map', 'admin' => '/admin/login'] as $key => $url)
                 <a href="{{ $url }}" @class([
-                    'active' => request()->is('/') && $key === 'home',
+                    'active' => ($key === 'home' && request()->is('/')) || request()->is($key),
                     'admin-link' => $key === 'admin',
                 ])
                     @if ($key !== 'admin') data-section-link="{{ $key }}" @endif>{{ $site['nav_' . $key] }}
@@ -132,7 +132,7 @@
         </div>
         <div class="wrap footer-bottom">
             <div>
-                @foreach (['home' => '/#top', 'news' => '/#news', 'achievements' => '/#achievements', 'officers' => '/#officers'] as $key => $url)
+                @foreach (['home' => '/#top', 'news' => '/#news', 'achievements' => '/#achievements', 'officers' => '/#officers', 'songs' => '/songs', 'map' => '/map'] as $key => $url)
                     <a href="{{ $url }}">{{ $site['nav_' . $key] }}</a>
                 @endforeach
             </div>

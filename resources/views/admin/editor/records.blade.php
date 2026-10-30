@@ -8,7 +8,9 @@
     </div>
     <button class="record-launch" data-record-type="news">Manage News</button><button class="record-launch"
         data-record-type="achievements">Manage Achievements</button><button class="record-launch"
-        data-record-type="officers">Manage Officers</button>
+        data-record-type="officers">Manage Officers</button><button class="record-launch"
+        data-record-type="songs">Manage Songs</button><button class="record-launch"
+        data-record-type="centers">Manage Map CENTRO</button>
     <h3>Recent updates</h3>
     @forelse($recent as $record)
         <button class="record-recent" data-recent-type="{{ $record->type }}"

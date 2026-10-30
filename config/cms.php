@@ -40,7 +40,9 @@ return [
     'navigation' => [
         'nav_home' => ['Home label', 'text', 'Home'], 'nav_news' => ['News label', 'text', 'News'],
         'nav_achievements' => ['Achievement label', 'text', 'Achievement'],
-        'nav_officers' => ['Officers label', 'text', 'Officers'], 'nav_admin' => ['Login label', 'text', 'Admin login'],
+        'nav_officers' => ['Officers label', 'text', 'Officers'],
+        'nav_songs' => ['Songs label', 'text', 'Songs'], 'nav_map' => ['Map label', 'text', 'Map'],
+        'nav_admin' => ['Login label', 'text', 'Admin login'],
     ],
     'footer' => [
         'footer_heading' => ['Footer heading', 'textarea', 'Lead. Serve. Inspire.'],

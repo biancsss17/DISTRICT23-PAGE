@@ -10,7 +10,7 @@ import { request, uploadLimits } from './editor-api.js';
         id = null,
         dirty = false,
         busy = false;
-    const labels = { news: 'News', achievements: 'Achievements', officers: 'Officers' };
+    const labels = { news: 'News', achievements: 'Achievements', officers: 'Officers', songs: 'Songs', centers: 'Map CENTRO' };
 
     function say(text, error = false) {
         message.textContent = text;
@@ -32,6 +32,7 @@ import { request, uploadLimits } from './editor-api.js';
         if (options.required) input.required = true;
         if (options.maxLength) input.maxLength = options.maxLength;
         if (options.min != null) input.min = options.min;
+        if (options.max != null) input.max = options.max;
         if (options.accept) input.accept = options.accept;
         if (options.multiple) input.multiple = true;
         wrapper.append(input);
@@ -108,7 +109,7 @@ import { request, uploadLimits } from './editor-api.js';
                 'button',
                 'record-primary',
                 '+ Add ' +
-                    (type === 'officers' ? 'officer' : type === 'news' ? 'story' : 'achievement'),
+                    (type === 'officers' ? 'officer' : type === 'songs' ? 'song' : type === 'centers' ? 'center' : type === 'news' ? 'story' : 'achievement'),
             );
             create.type = 'button';
             create.addEventListener('click', () => edit(null));
@@ -130,7 +131,7 @@ import { request, uploadLimits } from './editor-api.js';
                 editButton.type = 'button';
                 editButton.addEventListener('click', () => edit(record.id));
                 let preview = null;
-                if (type !== 'officers') {
+                if (['news', 'achievements'].includes(type)) {
                     preview = element('a', '', 'Preview');
                     preview.href = '/admin/editor/records/' + type + '/' + record.id + '/preview';
                     preview.target = '_blank';
@@ -177,7 +178,7 @@ import { request, uploadLimits } from './editor-api.js';
         form.replaceChildren();
         document.querySelector('#record-heading').textContent =
             (id ? 'Edit ' : 'Add ') +
-            (type === 'officers' ? 'officer' : type === 'news' ? 'News story' : 'achievement');
+            (type === 'officers' ? 'officer' : type === 'songs' ? 'song' : type === 'centers' ? 'map CENTRO' : type === 'news' ? 'News story' : 'achievement');
         const back = element('button', 'record-back', '← All ' + labels[type]);
         back.type = 'button';
         back.addEventListener('click', () => listing(type));
@@ -206,6 +207,24 @@ import { request, uploadLimits } from './editor-api.js';
                     accept: 'image/jpeg,image/png,image/webp,image/gif',
                 }),
             );
+        } else if (type === 'songs') {
+            main.append(field('Song title', 'title', record.title, 'text', { required: true, maxLength: 180 }));
+            main.append(field('Slug', 'slug', record.slug, 'text', { required: true, maxLength: 180 }));
+            main.append(field('Category', 'category', record.category, 'text', { maxLength: 80 }));
+            main.append(field('Lyrics', 'lyrics', record.lyrics, 'textarea', { required: true, maxLength: 100000 }));
+            side.append(field('YouTube or video URL', 'video_url', record.video_url, 'url', { maxLength: 500 }));
+            side.append(field('Published at', 'published_at', record.published_at || new Date().toISOString().slice(0, 16), 'datetime-local'));
+            side.append(element('p', 'record-hint', 'Paste a YouTube link to show an embedded player, or a direct video URL for a native player.'));
+        } else if (type === 'centers') {
+            main.append(field('CENTRO name', 'name', record.name, 'text', { required: true, maxLength: 180 }));
+            main.append(field('Slug', 'slug', record.slug, 'text', { required: true, maxLength: 180 }));
+            main.append(field('Description', 'description', record.description, 'textarea', { maxLength: 1000 }));
+            main.append(field('Address', 'address', record.address, 'textarea', { required: true, maxLength: 500 }));
+            side.append(field('Latitude', 'latitude', record.latitude, 'number', { min: -90, max: 90, maxLength: 20 }));
+            side.append(field('Longitude', 'longitude', record.longitude, 'number', { min: -180, max: 180, maxLength: 20 }));
+            side.append(field('External map URL (optional)', 'map_url', record.map_url, 'url', { maxLength: 500 }));
+            side.append(field('Published at', 'published_at', record.published_at || new Date().toISOString().slice(0, 16), 'datetime-local'));
+            side.append(element('p', 'record-hint', 'Enter the exact latitude and longitude to show a Google Maps marker below this CENTRO.'));
         } else {
             main.append(
                 field('Title', 'title', record.title, 'text', { required: true, maxLength: 180 }),
@@ -259,32 +278,24 @@ import { request, uploadLimits } from './editor-api.js';
                 min: 0,
             }),
         );
-        side.append(
-            field('Additional photos and video', 'gallery_uploads[]', '', 'file', {
-                accept: 'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/ogg',
-                multiple: true,
-            }),
-        );
-        side.append(
-            element(
-                'p',
-                'record-hint',
-                `Maximum ${uploadLimits.maxPhotos} photos and ${uploadLimits.maxVideos} video total per item, including its cover or portrait. ${uploadLimits.photoMb} MB per photo and ${uploadLimits.videoMb} MB per video. New gallery uploads replace the current gallery.`,
-            ),
-        );
-        if (record.cover)
-            side.append(mediaItems([record.cover], type === 'officers' ? 'Portrait' : 'Cover'));
-        if (record.gallery?.length) side.append(mediaItems(record.gallery, 'Gallery'));
+        if (['news', 'achievements', 'officers'].includes(type)) {
+            side.append(field('Additional photos and video', 'gallery_uploads[]', '', 'file', {
+                accept: 'image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/ogg', multiple: true,
+            }));
+            side.append(element('p', 'record-hint', `Maximum ${uploadLimits.maxPhotos} photos and ${uploadLimits.maxVideos} video total per item, including its cover or portrait. ${uploadLimits.photoMb} MB per photo and ${uploadLimits.videoMb} MB per video. New gallery uploads replace the current gallery.`));
+            if (record.cover) side.append(mediaItems([record.cover], type === 'officers' ? 'Portrait' : 'Cover'));
+            if (record.gallery?.length) side.append(mediaItems(record.gallery, 'Gallery'));
+        }
         grid.append(main, side);
         form.append(grid);
         const save = element(
             'button',
             'record-primary',
-            'Save ' + (type === 'officers' ? 'officer' : 'story'),
+            'Save ' + (type === 'officers' ? 'officer' : type === 'songs' ? 'song' : type === 'centers' ? 'CENTRO' : 'story'),
         );
         save.type = 'submit';
         form.append(save);
-        const titleInput = form.querySelector('[name="title"]'),
+        const titleInput = form.querySelector('[name="title"]') || form.querySelector('[name="name"]'),
             slugInput = form.querySelector('[name="slug"]');
         if (titleInput && slugInput && !id) {
             let automatic = true;

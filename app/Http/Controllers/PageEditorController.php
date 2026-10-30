@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SavePageDraftRequest;
 use App\Models\Content;
+use App\Models\Center;
 use App\Models\Media;
 use App\Models\Officer;
+use App\Models\Song;
 use App\Services\PageDrafts;
 use App\Services\PageEditor;
 use App\Support\MediaRules;
@@ -27,6 +29,8 @@ class PageEditorController extends Controller
                 'news' => Content::where('type', 'news')->published()->count(),
                 'achievements' => Content::where('type', 'achievements')->published()->count(),
                 'officers' => Officer::where('status', 'published')->count(),
+                'songs' => Song::where('status', 'published')->whereNotNull('published_at')->count(),
+                'centers' => Center::where('status', 'published')->whereNotNull('published_at')->count(),
             ],
             'recent' => Content::whereIn('type', ['news', 'achievements'])->latest('updated_at')->limit(6)->get(),
         ])->withHeaders(['Cache-Control' => 'no-store']);

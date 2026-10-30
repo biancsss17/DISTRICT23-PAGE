@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\Center;
 use App\Models\Officer;
 use App\Models\PageSection;
+use App\Models\Song;
 use App\Services\PageEditor;
 
 class PublicController extends Controller
@@ -50,5 +52,21 @@ class PublicController extends Controller
         $section = PageSection::where('key', 'officers')->firstOrFail();
 
         return view('public.officers', compact('officers', 'section'));
+    }
+
+    public function songs()
+    {
+        $songs = Song::where('status', 'published')->whereNotNull('published_at')->where('published_at', '<=', now())
+            ->orderBy('sort_order')->orderBy('title')->get();
+
+        return view('public.songs', compact('songs'));
+    }
+
+    public function map()
+    {
+        $centers = Center::where('status', 'published')->whereNotNull('published_at')->where('published_at', '<=', now())
+            ->orderBy('sort_order')->orderBy('name')->get();
+
+        return view('public.map', compact('centers'));
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Content;
+use App\Models\Center;
 use App\Models\HeroSlide;
 use App\Models\Media;
 use App\Models\Officer;
@@ -47,6 +48,39 @@ class CmsSeeder extends Seeder
         foreach (['President', 'Vice President', 'Secretary', 'Treasurer'] as $i => $position) {
             Officer::firstOrCreate(['name' => 'Sample officer '.($i + 1)], ['position' => $position, 'biography' => 'Sample profile. Replace with an approved officer biography and portrait.', 'term' => 'Sample term', 'hierarchy_level' => $i < 2 ? $i : 2, 'sort_order' => $i, 'status' => 'published']);
         }
+        Center::updateOrCreate(['slug' => 'ubbog-ni-ayat'], [
+            'name' => 'CENTRO UBBOG NI AYAT',
+            'description' => null,
+            'address' => 'GANTE III STREET, PIONEER AVENUE, MAGUGPO WEST, TAGUM CITY, DAVAO DEL NORTE',
+            'latitude' => 7.4545418,
+            'longitude' => 125.7998692,
+            'map_url' => 'https://www.google.com/maps/place/Ubbog+Ni+Ayat/@7.4545418,125.7998692,17z/data=!3m1!4b1!4m6!3m5!1s0x32f95336dddbf151:0xc613c2ef8908ebfa!8m2!3d7.4545418!4d125.7998692!16s%2Fg%2F11t_zsvgh8?entry=ttu',
+            'published_at' => now(),
+            'status' => 'published',
+            'sort_order' => 0,
+        ]);
+        Center::updateOrCreate(['slug' => 'centro-wisdom'], [
+            'name' => 'CENTRO WISDOM',
+            'description' => null,
+            'address' => '',
+            'latitude' => 7.3618161,
+            'longitude' => 125.704352,
+            'map_url' => 'https://www.google.com/maps/place/UECFI+-+Centro+Wisdom+(District+23)/@7.3618161,125.704352,17z/data=!3m1!4b1!4m6!3m5!1s0x32f94f222b70d6b9:0x12ea2b294ae33869!8m2!3d7.3618161!4d125.704352!16s%2Fg%2F11v0gcqr5n?entry=ttu',
+            'published_at' => now(),
+            'status' => 'published',
+            'sort_order' => 1,
+        ]);
+        Center::updateOrCreate(['slug' => 'temple-of-jesus-christ-the-living-god'], [
+            'name' => 'CENTRO TEMPLE OF JESUS CHRIST - THE LIVING GOD',
+            'description' => null,
+            'address' => '',
+            'latitude' => 7.1081749,
+            'longitude' => 125.6125766,
+            'map_url' => 'https://www.google.com/maps/place/UECFI,+Temple+of+Jesus+Christ/@7.1081749,125.6125766,17z/data=!3m1!4b1!4m6!3m5!1s0x32f96d393b4bfac7:0x5dee1eca8a33139e!8m2!3d7.1081749!4d125.6125766!16s%2Fg%2F11r72943n2?entry=ttu',
+            'published_at' => now(),
+            'status' => 'published',
+            'sort_order' => 2,
+        ]);
 
         $sampleImages = [
             'sample-community-circle.png' => 'Community learning circle',
