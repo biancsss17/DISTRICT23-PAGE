@@ -1986,19 +1986,17 @@ html[data-theme="light"] .centro-detail-prompt {
 }
 
 .center-card h2 {
-    font-size: clamp(1rem, 1.55vw, 1.35rem);
+    font-size: clamp(.9rem, 1.35vw, 1.2rem);
     line-height: 1.2;
-    letter-spacing: -.03em;
+    letter-spacing: -.06em;
 }
 
 .center-card-heading > div {
     min-width: 0;
 }
 
-@media (min-width: 761px) {
-    .center-card-heading h2 {
-        white-space: nowrap;
-    }
+.center-card-heading h2 {
+    white-space: nowrap;
 }
 
 .center-card .muted {
@@ -2104,5 +2102,9 @@ html[data-theme="light"] .centro-detail-prompt {
     .song-card-heading,
     .center-card-heading {
         flex-direction: column;
+    }
+
+    .center-card-heading h2 {
+        white-space: normal;
     }
 }
